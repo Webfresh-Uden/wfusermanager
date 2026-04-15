@@ -33,6 +33,7 @@ The user manager is installed, have fun!
 - Create Config file
 - Create testing framework
 - Create console command for easy installation
+- Created migration for team definitions (We want named teams!)
 
 ## ToDo
 - Finish console command
