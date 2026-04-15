@@ -24,5 +24,20 @@
   "require": {
       "laravel/sanctum": "^4.3",
       "spatie/laravel-permission": "^7.3"
+  },
+    "require-dev": {
+        "orchestra/testbench": "^11.1",
+        "phpunit/phpunit": "^12.5",
+        "pestphp/pest": "^4.6"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WebFresh\\UserManager\\Tests\\": "tests/"
+        }
+    },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   }
 }
