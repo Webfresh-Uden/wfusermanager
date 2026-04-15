@@ -1,0 +1,13 @@
+{
+  "name": "webfresh/usermanager",
+  "description": "User Manager for Webfresh Laravel Projects",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Roel van Lierop-Megens",
+      "email": "roel.van.lierop@gmail.com"
+    }
+  ],
+  "require": {}
+}
