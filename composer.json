@@ -13,6 +13,16 @@
     "psr-4": {
       "WebFresh\\UserManager\\": "src"
     }
+  },
+  "extra": {
+      "laravel": {
+          "providers": [
+              "WebFresh\\UserManager\\UserManagerServiceProvider"
+          ]
+      }
+  },
+  "require": {
+      "laravel/sanctum": "^4.3",
+      "spatie/laravel-permission": "^7.3",
   }
-  "require": {}
 }
