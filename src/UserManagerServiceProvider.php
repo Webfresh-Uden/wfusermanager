@@ -14,6 +14,6 @@ class UserManagerServiceProvider extends ServiceProvider
   {
     $this->publishes([
         __DIR__.'/../config/wfusermanager.php' => config_path('wfusermanager.php'),
-    ]);
+    ], 'config');
   }
 }
