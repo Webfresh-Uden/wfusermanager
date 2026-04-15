@@ -6,9 +6,9 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('wfom:install')]
+#[Signature('wfum:install')]
 #[Description('Command description')]
-class WfomInstallCommand extends Command
+class WfumInstallCommand extends Command
 {
     /**
      * Execute the console command.
