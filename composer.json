@@ -9,5 +9,10 @@
       "email": "roel.van.lierop@gmail.com"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "WebFresh\\UserManager\\": "src"
+    }
+  }
   "require": {}
 }
