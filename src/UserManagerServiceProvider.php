@@ -12,6 +12,8 @@ class UserManagerServiceProvider extends ServiceProvider
 
   public function boot()
   {
-    //
+    $this->publishes([
+        __DIR__.'/../config/wfusermanager.php' => config_path('wfusermanager.php'),
+    ]);
   }
 }
