@@ -23,8 +23,8 @@ class WfumInstallCommand extends Command
 
         if( !App::isProduction() ) {
             $confirmed = $this->confirm(
-                'Do you want to the ENV data to create a user?',
-                true);
+                'Do you want to use the ENV data to create a user?',
+                false);
         }
 
         $first_name = env('WFUM_USER_FIRST_NAME', 'Webfresh');
