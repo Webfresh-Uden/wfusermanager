@@ -54,7 +54,7 @@
         </div>
     </flux:modal>
 
-    <flux:modal name="permission-write" class="md:w-96" wire:model.self="showPermissionWriteModal" @close="clearFieldData">
+    <flux:modal name="permission-write" class="md:w-96" wire:model.self="showPermissionWriteModal" wire:close="clearFieldData()">
         <div class="space-y-6">
             <div>
                 @if( $this->id !== '' )

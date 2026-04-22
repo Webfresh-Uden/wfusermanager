@@ -3,11 +3,14 @@
 namespace WebFresh\UserManager\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\User;
+use WebFresh\UserManager\Models\Team;
+use WebFresh\UserManager\Models\WfumRole as Role;
+use WebFresh\UserManager\Models\WfumUser as User;
 
 #[Title('Users')]
 class Users extends Component
@@ -24,9 +27,21 @@ class Users extends Component
 
     public bool $showUserDeleteModal = false;
 
+    public bool $showAssignRoleModal = false;
+
     public string $name = '';
 
     public string $email = '';
+
+    public string $password = '';
+
+    public array $userRoles = [];
+
+    public bool $blocked = false;
+
+    public Collection $roles;
+
+    public Collection $teams;
 
     public string $id = '';
 
@@ -36,26 +51,43 @@ class Users extends Component
     public function render(): View
     {
         $this->users = DB::table('users')->orderBy('name', $this->sortDirection)->paginate(15);
+        $this->roles = Role::all();
+        $this->teams = Team::all();
 
         return view('wfum::livewire.users', [
             'users' => $this->users,
         ]);
     }
 
+    public function assignRoleAction()
+    {
+        // Loop, add and remove role link to user
+        $user = User::find($this->id);
+
+        $this->showAssignRoleModal = false;
+    }
+
     public function writeUserAction(): void
     {
+        $confidentialData = [];
+        if ($this->password != '') {
+            $confidentialData['password'] = bcrypt($this->password);
+        }
+
+        $this->password = '';
+
         User::updateOrCreate([
             'id' => $this->id,
-        ], [
+        ], array_merge([
             'name' => $this->name,
             'email' => $this->email,
-        ]);
+        ], $confidentialData));
 
         $this->clearFieldData();
         $this->showUserWriteModal = false;
     }
 
-    public function showWriteUserModal($user_id): void
+    public function showWriteUserModalWindow($user_id): void
     {
         $user = User::find($user_id);
 
@@ -65,7 +97,7 @@ class Users extends Component
         $this->showUserWriteModal = true;
     }
 
-    public function showDeleteUserModal($user_id): void
+    public function showDeleteUserModalWindow($user_id): void
     {
         $this->id = $user_id;
         $this->showUserDeleteModal = true;
@@ -75,6 +107,8 @@ class Users extends Component
     {
         $this->id = '';
         $this->name = '';
+        $this->email = '';
+        $this->userRoles = [];
     }
 
     public function deleteUserAction(): void
@@ -92,5 +126,19 @@ class Users extends Component
             $this->sortBy = $column;
             $this->sortDirection = 'asc';
         }
+    }
+
+    public function changeUserStatus($user_id)
+    {
+        $user = User::find($user_id);
+        $user->blocked = ! ($user->blocked === true);
+        $user->save();
+    }
+
+    public function showAssignRoleModalWindow($user_id): void
+    {
+        $user = User::find($user_id);
+        $this->userRoles = $user->userRoles();
+        $this->showAssignRoleModal = true;
     }
 }

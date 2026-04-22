@@ -15,6 +15,8 @@
                         <flux:table.columns>
                             <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:table.column>
                             <flux:table.column sortable :sorted="$sortBy === 'email'" :direction="$sortDirection" wire:click="sort('email')">E-mail address</flux:table.column>
+                            <flux:table.column>Teams</flux:table.column>
+                            <flux:table.column>Status</flux:table.column>
                             <flux:table.column class="max-w-32">Actions</flux:table.column>
                         </flux:table.columns>
                         <flux:table.rows>
@@ -25,18 +27,51 @@
                                         <span>{{ $user->name }}</span>
                                     </div>
                                 </flux:table.cell>
-                                <flux:table.cell class="w-full">
+                                <flux:table.cell>
                                     <div class="flex items-center gap-2">
                                         <span>{{ $user->email }}</span>
                                     </div>
                                 </flux:table.cell>
+                                <flux:table.cell class="w-full">
+                                    <div class="flex items-center gap-2">
+                                        <span>{{ implode(', ', \WebFresh\UserManager\Models\WfumUser::find($user->id)->teams()) }}</span>
+                                    </div>
+                                </flux:table.cell>
                                 <flux:table.cell>
+                                    @if( $user->id === auth()->id() )
+                                        <flux:tooltip content="You cannot change your own status">
+                                            <flux:badge variant="info">Active</flux:badge>
+                                        </flux:tooltip>
+                                    @else
+                                        <div class="flex items-center gap-2">
+                                            @if( $user->blocked )
+                                                <flux:tooltip content="Click to unblock user">
+                                                    <flux:badge wire:click="changeUserStatus({{ $user->id }})" variant="danger">Blocked</flux:badge>
+                                                </flux:tooltip>
+                                            @else
+                                                <flux:tooltip content="Click to block user">
+                                                    <flux:badge wire:click="changeUserStatus({{ $user->id }})" variant="success">Active</flux:badge>
+                                                </flux:tooltip>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </flux:table.cell>
+                                <flux:table.cell>
+                                    <flux:tooltip content="Assign roles to user">
+                                        <flux:icon.identification class="cursor-pointer text-orange-500 inline-block me-4" wire:click.self="showAssignRoleModalWindow({{ $user->id }})" />
+                                    </flux:tooltip>
                                     <flux:tooltip content="Update user">
-                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block" wire:click.self="showWriteUserModal({{ $user->id }})" />
+                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block me-4" wire:click.self="showWriteUserModalWindow({{ $user->id }})" />
                                     </flux:tooltip>
-                                    <flux:tooltip content="Delete user">
-                                        <flux:icon.x-circle class="cursor-pointer text-red-500 inline-block" wire:click.self="showDeleteUserModal({{ $user->id }})" />
-                                    </flux:tooltip>
+                                    @if( $user->id === auth()->id() )
+                                        <flux:tooltip content="You cannot change your own status">
+                                            <flux:icon.x-circle class="cursor-pointer text-gray-500 inline-block" />
+                                        </flux:tooltip>
+                                    @else
+                                        <flux:tooltip content="Delete user">
+                                            <flux:icon.x-circle class="cursor-pointer text-red-500 inline-block" wire:click.self="showDeleteUserModalWindow({{ $user->id }})" />
+                                        </flux:tooltip>
+                                    @endif
                                 </flux:table.cell>
                             </flux:table.row>
                             @endforeach
@@ -60,7 +95,7 @@
         </div>
     </flux:modal>
 
-    <flux:modal name="user-write" class="md:w-96" wire:model.self="showUserWriteModal" @close="clearFieldData">
+    <flux:modal name="user-write" class="md:w-96" wire:model.self="showUserWriteModal" wire:close="clearFieldData()">
         <div class="space-y-6">
             <div>
                 @if( $this->id !== '' )
@@ -74,6 +109,7 @@
             <form wire:submit="writeUserAction">
                 <flux:input wire:model="name" label="Name" placeholder="User name" class="mb-4" />
                 <flux:input wire:model="email" label="E-mail address" placeholder="E-mail address" class="mb-4" />
+                <flux:input type="password" wire:model="password" label="Password" placeholder="Password" class="mb-4" />
                 <div class="flex">
                     <flux:spacer />
                     <flux:button type="submit" variant="primary">Save user</flux:button>
@@ -82,5 +118,31 @@
         </div>
     </flux:modal>
 
-
+    <flux:modal flyout name="user-assign-role" class="md:w-96" wire:model.self="showAssignRoleModal" wire:close="clearFieldData()">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Assign roles</flux:heading>
+                <flux:text class="mt-2">Assign roles to the selected user</flux:text>
+            </div>
+            <form wire:submit="assignRoleAction">
+                @foreach( $teams as $team )
+                    @if( $team->roles()->count() > 0 )
+                        <flux:checkbox.group wire:model="roles" label="{{ $team->name }}" class="mb-4">
+                            @foreach( $team->roles as $role )
+                                @if( in_array( $role->id, $userRoles ) )
+                                    <flux:checkbox label="{{ $role->name }}" value="{{ $role->id }}" checked />
+                                @else
+                                    <flux:checkbox label="{{ $role->name }}" value="{{ $role->id }}" />
+                                @endif
+                            @endforeach
+                        </flux:checkbox.group>
+                    @endif
+                @endforeach
+                <div class="flex">
+                    <flux:spacer />
+                    <flux:button type="submit" variant="primary">Save roles</flux:button>
+                </div>
+            </form>
+        </div>
+    </flux:modal>
 </div>

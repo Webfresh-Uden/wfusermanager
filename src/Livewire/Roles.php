@@ -3,11 +3,13 @@
 namespace WebFresh\UserManager\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Spatie\Permission\Models\Role;
+use WebFresh\UserManager\Models\Team;
+use WebFresh\UserManager\Models\WfumRole as Role;
 
 #[Title('Roles')]
 class Roles extends Component
@@ -28,12 +30,19 @@ class Roles extends Component
 
     public string $id = '';
 
+    public string $team_id = '';
+
+    public string $guard_name = 'web';
+
+    public Collection $teams;
+
     public function mount(): void {}
 
     #[Layout('layouts.app')]
     public function render(): View
     {
         $this->roles = DB::table('roles')->orderBy('name', $this->sortDirection)->paginate(15);
+        $this->teams = Team::all();
 
         return view('wfum::livewire.roles', [
             'roles' => $this->roles,
@@ -46,6 +55,8 @@ class Roles extends Component
             'id' => $this->id,
         ], [
             'name' => $this->name,
+            'team_id' => $this->team_id,
+            'guard_name' => $this->guard_name,
         ]);
 
         $this->clearFieldData();
@@ -57,7 +68,9 @@ class Roles extends Component
         $role = Role::find($role_id);
 
         $this->name = $role->name;
+        $this->guard_name = $role->guard_name;
         $this->id = $role->id;
+        $this->team_id = $role->team_id;
         $this->showRoleWriteModal = true;
     }
 
@@ -67,10 +80,13 @@ class Roles extends Component
         $this->showRoleDeleteModal = true;
     }
 
+
+
     public function clearFieldData(): void
     {
         $this->id = '';
         $this->name = '';
+        $this->team_id = '';
     }
 
     public function deleteRoleAction(): void

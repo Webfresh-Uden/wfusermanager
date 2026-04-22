@@ -14,15 +14,23 @@
                     <flux:table :paginate="$this->roles" class="z-10 table-fixed">
                         <flux:table.columns>
                             <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:table.column>
+                            <flux:table.column sortable :sorted="$sortBy === 'team'" :direction="$sortDirection" wire:click="sort('team')">Team</flux:table.column>
                             <flux:table.column class="max-w-32">Actions</flux:table.column>
                         </flux:table.columns>
                         <flux:table.rows>
                             @foreach( $roles as $role )
                             <flux:table.row wire:key="role-{{ $role->id }}">
-                                <flux:table.cell class="w-full">
+                                <flux:table.cell>
                                     <div class="flex items-center gap-2">
                                         <span>{{ $role->name }}</span>
                                     </div>
+                                </flux:table.cell>
+                                <flux:table.cell class="w-full">
+                                    @if( $role->id )
+                                    <div class="flex items-center gap-2">
+                                        <span>{{ \WebFresh\UserManager\Models\WfumRole::find($role->id)->team()->name }}</span>
+                                    </div>
+                                    @endif
                                 </flux:table.cell>
                                 <flux:table.cell>
                                     <flux:tooltip content="Update role">
@@ -54,7 +62,7 @@
         </div>
     </flux:modal>
 
-    <flux:modal name="role-write" class="md:w-96" wire:model.self="showRoleWriteModal" @close="clearFieldData">
+    <flux:modal name="role-write" class="md:w-96" wire:model.self="showRoleWriteModal" wire:close="clearFieldData()">
         <div class="space-y-6">
             <div>
                 @if( $this->id !== '' )
@@ -67,6 +75,20 @@
             </div>
             <form wire:submit="writeRoleAction">
                 <flux:input wire:model="name" label="Name" placeholder="Role name" class="mb-4" />
+                <flux:dropdown class="w-full mb-4">
+                    <flux:button icon:trailing="chevron-down" align="start" class="w-full mb-4">Select team</flux:button>
+                    <flux:menu>
+                        <flux:menu.radio.group wire:model="team_id">
+                            @foreach( $teams as $i => $team )
+                                @if($team->id === $this->id)
+                                    <flux:menu.radio checked :value="$team->id">{{ $team->name }} | {{$team->id }}-{{ $this->id}}</flux:menu.radio>
+                                @else
+                                    <flux:menu.radio :value="$team->id">{{ $team->name }}</flux:menu.radio>
+                                @endif
+                            @endforeach
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
                 <div class="flex">
                     <flux:spacer />
                     <flux:button type="submit" variant="primary">Save role</flux:button>

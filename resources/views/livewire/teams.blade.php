@@ -54,7 +54,7 @@
         </div>
     </flux:modal>
 
-    <flux:modal name="team-write" class="md:w-96" wire:model.self="showTeamWriteModal" @close="clearFieldData">
+    <flux:modal name="team-write" class="md:w-96" wire:model.self="showTeamWriteModal" wire:close="clearFieldData()">
         <div class="space-y-6">
             <div>
                 @if( $this->id !== '' )
