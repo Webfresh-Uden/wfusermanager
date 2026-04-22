@@ -7,26 +7,24 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\User;
+use WebFresh\UserManager\Models\Team;
 
-#[Title('Users')]
-class Users extends Component
+#[Title('Teams')]
+class Teams extends Component
 {
     use WithPagination;
 
-    private $users;
+    private $teams;
 
     public string $sortBy = 'name';
 
     public string $sortDirection = 'asc';
 
-    public bool $showUserWriteModal = false;
+    public bool $showTeamWriteModal = false;
 
-    public bool $showUserDeleteModal = false;
+    public bool $showTeamDeleteModal = false;
 
     public string $name = '';
-
-    public string $email = '';
 
     public string $id = '';
 
@@ -35,40 +33,38 @@ class Users extends Component
     #[Layout('layouts.app')]
     public function render(): View
     {
-        $this->users = DB::table('users')->orderBy('name', $this->sortDirection)->paginate(15);
+        $this->teams = DB::table('wfum_teams')->orderBy('name', $this->sortDirection)->paginate(15);
 
-        return view('wfum::livewire.users', [
-            'users' => $this->users,
+        return view('wfum::livewire.teams', [
+            'teams' => $this->teams,
         ]);
     }
 
-    public function writeUserAction(): void
+    public function writeTeamAction(): void
     {
-        User::updateOrCreate([
+        Team::updateOrCreate([
             'id' => $this->id,
         ], [
             'name' => $this->name,
-            'email' => $this->email,
         ]);
 
         $this->clearFieldData();
-        $this->showUserWriteModal = false;
+        $this->showTeamWriteModal = false;
     }
 
-    public function showWriteUserModal($user_id): void
+    public function showWriteTeamModal($team_id): void
     {
-        $user = User::find($user_id);
+        $team = Team::find($team_id);
 
-        $this->name = $user->name;
-        $this->email = $user->email;
-        $this->id = $user->id;
-        $this->showUserWriteModal = true;
+        $this->name = $team->name;
+        $this->id = $team->id;
+        $this->showTeamWriteModal = true;
     }
 
-    public function showDeleteUserModal($user_id): void
+    public function showDeleteTeamModal($team_id): void
     {
-        $this->id = $user_id;
-        $this->showUserDeleteModal = true;
+        $this->id = $team_id;
+        $this->showTeamDeleteModal = true;
     }
 
     public function clearFieldData(): void
@@ -77,11 +73,11 @@ class Users extends Component
         $this->name = '';
     }
 
-    public function deleteUserAction(): void
+    public function deleteTeamAction(): void
     {
-        User::find($this->id)->delete();
+        Team::find($this->id)->delete();
         $this->clearFieldData();
-        $this->showUserDeleteModal = false;
+        $this->showTeamDeleteModal = false;
     }
 
     public function sort($column)
