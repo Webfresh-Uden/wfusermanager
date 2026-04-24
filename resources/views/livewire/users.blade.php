@@ -57,6 +57,11 @@
                                     @endif
                                 </flux:table.cell>
                                 <flux:table.cell>
+                                    @if( config('wfusermanager.allow_shadow_login') === true )
+                                        <flux:tooltip content="Login as this user">
+                                            <flux:icon.square-2-stack class="cursor-pointer text-orange-500 inline-block me-4" wire:click.self="shadowlogin({{ $user->id }})" />
+                                        </flux:tooltip>
+                                    @endif
                                     <flux:tooltip content="Assign roles to user">
                                         <flux:icon.identification class="cursor-pointer text-orange-500 inline-block me-4" wire:click.self="showAssignRoleModalWindow({{ $user->id }})" />
                                     </flux:tooltip>
@@ -127,12 +132,12 @@
             <form wire:submit="assignRoleAction">
                 @foreach( $teams as $team )
                     @if( $team->roles()->count() > 0 )
-                        <flux:checkbox.group wire:model="roles" label="{{ $team->name }}" class="mb-4">
+                        <flux:checkbox.group wire:model="userRoles" label="{{ $team->name }}" class="mb-4">
                             @foreach( $team->roles as $role )
-                                @if( in_array( $role->id, $userRoles ) )
-                                    <flux:checkbox label="{{ $role->name }}" value="{{ $role->id }}" checked />
+                                @if( in_array( $role->name, $userRoles ) === true )
+                                    <flux:checkbox label="{{ $role->name }}" value="{{ $role->name }}" :checked="true" />
                                 @else
-                                    <flux:checkbox label="{{ $role->name }}" value="{{ $role->id }}" />
+                                    <flux:checkbox label="{{ $role->name }}" value="{{ $role->name }}" />
                                 @endif
                             @endforeach
                         </flux:checkbox.group>

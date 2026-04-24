@@ -4,9 +4,14 @@ namespace WebFresh\UserManager\Models;
 
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Traits\HasRoles;
 
 class WfumUser extends User
 {
+    use HasRoles;
+
+    protected $guard_name = 'web';
+
     protected $table = 'users';
 
     protected $fillable = [
@@ -32,10 +37,11 @@ class WfumUser extends User
     public function userRoles(): array
     {
         return DB::table('model_has_roles')
-            ->select('role_id')
+            ->select('model_has_roles.role_id', 'roles.name')
+            ->leftJoin('roles', 'model_has_roles.role_id', '=', 'roles.id')
             ->where('model_id', $this->id)
             ->where('model_type', 'App\Models\User')
-            ->pluck('role_id')
+            ->pluck('name')
             ->toArray();
     }
 }

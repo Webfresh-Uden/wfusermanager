@@ -4,6 +4,7 @@ namespace WebFresh\UserManager\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -63,6 +64,20 @@ class Users extends Component
     {
         // Loop, add and remove role link to user
         $user = User::find($this->id);
+        $roles = Role::whereIn('name', $this->userRoles)->get();
+        DB::transaction(function () use ($user, $roles) {
+            DB::table('model_has_roles')->where('model_id', $user->id)->where('model_type', 'App\Models\User')->delete();
+            foreach ($roles as $role) {
+                DB::table('model_has_roles')->insert([
+                    'model_id' => $user->id,
+                    'role_id' => $role->id,
+                    'model_type' => 'App\Models\User',
+                    'team_id' => $role->team_id,
+                ]);
+            }
+        });
+
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
         $this->showAssignRoleModal = false;
     }
@@ -138,7 +153,12 @@ class Users extends Component
     public function showAssignRoleModalWindow($user_id): void
     {
         $user = User::find($user_id);
+        $this->id = $user->id;
         $this->userRoles = $user->userRoles();
         $this->showAssignRoleModal = true;
+    }
+
+    public function shadowlogin($user_id){
+        $this->dispatch('shadowlogin', $user_id);
     }
 }
