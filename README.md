@@ -61,10 +61,18 @@ Add this to add a link to the User Manager settings for admins:
 - Create testing framework
 - Create console command for easy installation
 - Created migration for team definitions (We want named teams!)
+- Created migrations for Shadow Logins and Blocked Users
+- Created Livewire components for Shadow Logins and User Settings
 
 ## ToDo
+### Console and back-end updates
+- Prepopulate permissions and roles for our user manager
+- Disable deletion of said roles and permissions
 - Finish console command
-- Create migrations
-- Create Interface / Livewire components for user management
 - Create Tests
+### Default workflow hacks
+- Add the appropriate team ID when a user registers by itself.
+### GUI updates
+- Add team switcher to sidebar
+
 
