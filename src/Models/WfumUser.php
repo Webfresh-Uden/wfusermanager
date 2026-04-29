@@ -19,10 +19,12 @@ class WfumUser extends User
         'email',
         'blocked',
         'password',
+        'shadow_opt_out',
     ];
 
     protected $casts = [
         'blocked' => 'boolean',
+        'shadow_opt_out' => 'boolean',
     ];
 
     public function teams(): array

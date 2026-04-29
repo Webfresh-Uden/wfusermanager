@@ -57,9 +57,13 @@
                                     @endif
                                 </flux:table.cell>
                                 <flux:table.cell>
-                                    @if( config('wfusermanager.allow_shadow_login') === true )
+                                    @if( config('wfusermanager.allow_shadow_login') === true && $user->shadow_opt_out === 0 )
                                         <flux:tooltip content="Login as this user">
                                             <flux:icon.square-2-stack class="cursor-pointer text-orange-500 inline-block me-4" wire:click.self="shadowlogin({{ $user->id }})" />
+                                        </flux:tooltip>
+                                    @elseif( config('wfusermanager.allow_shadow_login') === true && $user->shadow_opt_out === 1 )
+                                        <flux:tooltip content="User disabled shadow login in their settings">
+                                            <flux:icon.exclamation-triangle color="red" class="cursor-pointer inline-block me-4" />
                                         </flux:tooltip>
                                     @endif
                                     <flux:tooltip content="Assign roles to user">

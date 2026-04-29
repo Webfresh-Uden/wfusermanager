@@ -26,6 +26,33 @@ Run the following command to migrate the database:
 
 The user manager is installed, have fun!
 
+### view components
+Shadow login Component:
+- __resources/views/layouts/app/sidebar.blade.php__
+Add this to add a header component which is shown when someone is using a shadow login:
+<livewire:wfum::components.shadow-login />
+
+Profile settings component:
+- __resources/views/components/settings/layout.blade.php__
+Add this to add a link to the User Manager settings for users:
+- <flux:navlist.item :href="route('wfum_usersettings.edit')" wire:navigate>{{ __('wfum::wfum.profile_menu_title') }}</flux:navlist.item>
+
+Main navigation:
+- __resources/views/layouts/app/sidebar.blade.php__
+Add this to add a link to the User Manager settings for admins:
+
+<flux:dropdown>
+    <flux:button class="w-full" icon="user" align="start" icon:trailing="chevron-down">User management</flux:button>
+    <flux:navmenu>
+        @if( config('permission.teams') )
+            <flux:navmenu.item :href="route('teams.index')" icon="user-group">{{ __('Teams') }}</flux:navmenu.item>
+        @endif
+        <flux:navmenu.item :href="route('users.index')" icon="user">{{ __('Users') }}</flux:navmenu.item>
+        <flux:navmenu.item :href="route('roles.index')" icon="identification">{{ __('Roles') }}</flux:navmenu.item>
+        <flux:navmenu.item :href="route('permissions.index')" icon="swatch">{{ __('Permissions') }}</flux:navmenu.item>
+    </flux:navmenu>
+</flux:dropdown>
+
 ## Done
 - Create package
 - Configure composer.json's dependencies

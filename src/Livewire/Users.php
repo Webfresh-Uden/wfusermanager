@@ -11,6 +11,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use WebFresh\UserManager\Models\Team;
 use WebFresh\UserManager\Models\WfumRole as Role;
+use WebFresh\UserManager\Models\WfumUser;
 use WebFresh\UserManager\Models\WfumUser as User;
 
 #[Title('Users')]
@@ -159,6 +160,9 @@ class Users extends Component
     }
 
     public function shadowlogin($user_id){
-        $this->dispatch('shadowlogin', $user_id);
+        $user = WfumUser::find($user_id);
+        if( $user->shadow_opt_out === false ) {
+            $this->dispatch('shadowlogin', $user_id);
+        }
     }
 }
