@@ -61,6 +61,8 @@ class Roles extends Component
 
         $this->clearFieldData();
         $this->showRoleWriteModal = false;
+
+        Flux::toast(text: __('Role :role updated', ['role' => $this->name]));
     }
 
     public function showWriteRoleModal($role_id): void
@@ -80,8 +82,6 @@ class Roles extends Component
         $this->showRoleDeleteModal = true;
     }
 
-
-
     public function clearFieldData(): void
     {
         $this->id = '';
@@ -91,9 +91,13 @@ class Roles extends Component
 
     public function deleteRoleAction(): void
     {
-        Role::find($this->id)->delete();
+        $role = Role::find($this->id);
+        $roleName = $role->name;
+        $role->delete();
         $this->clearFieldData();
         $this->showRoleDeleteModal = false;
+
+        Flux::toast(text: __('Permission :role removed', ['role' => $roleName]));
     }
 
     public function sort($column)

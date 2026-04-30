@@ -13,6 +13,7 @@ use WebFresh\UserManager\Models\Team;
 use WebFresh\UserManager\Models\WfumRole as Role;
 use WebFresh\UserManager\Models\WfumUser;
 use WebFresh\UserManager\Models\WfumUser as User;
+use Flux\Flux;
 
 #[Title('Users')]
 class Users extends Component
@@ -101,6 +102,8 @@ class Users extends Component
 
         $this->clearFieldData();
         $this->showUserWriteModal = false;
+
+        Flux::toast(text: __('User :user updated', ['user' => $this->name]));
     }
 
     public function showWriteUserModalWindow($user_id): void
@@ -129,9 +132,13 @@ class Users extends Component
 
     public function deleteUserAction(): void
     {
-        User::find($this->id)->delete();
+        $user = User::find($this->id);
+        $userName = $user->name;
+        $user->delete();
         $this->clearFieldData();
         $this->showUserDeleteModal = false;
+
+        Flux::toast(text: __('User :user removed', ['user' => $userName]));
     }
 
     public function sort($column)
@@ -149,6 +156,8 @@ class Users extends Component
         $user = User::find($user_id);
         $user->blocked = ! ($user->blocked === true);
         $user->save();
+
+        Flux::toast(text: __('User :user :status', ['user' => $user->name, 'status' => ($user->blocked === true ? 'blocked' : 'unblocked')]));
     }
 
     public function showAssignRoleModalWindow($user_id): void

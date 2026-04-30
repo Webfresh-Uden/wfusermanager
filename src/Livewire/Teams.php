@@ -2,6 +2,7 @@
 
 namespace WebFresh\UserManager\Livewire;
 
+use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
@@ -50,6 +51,8 @@ class Teams extends Component
 
         $this->clearFieldData();
         $this->showTeamWriteModal = false;
+
+        Flux::toast(text: __('Team :team updated', ['team' => $this->name]));
     }
 
     public function showWriteTeamModal($team_id): void
@@ -75,9 +78,13 @@ class Teams extends Component
 
     public function deleteTeamAction(): void
     {
-        Team::find($this->id)->delete();
+        $team = Team::find($this->id);
+        $teamName = $team->name;
+        $team->delete();
         $this->clearFieldData();
         $this->showTeamDeleteModal = false;
+
+        Flux::toast(text: __('Team :team removed', ['team' => $teamName]));
     }
 
     public function sort($column)

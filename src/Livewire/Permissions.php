@@ -73,6 +73,8 @@ class Permissions extends Component
 
         $this->clearFieldData();
         $this->showPermissionWriteModal = false;
+
+        Flux::toast(text: __('Permission :permission updated', ['permission' => $this->name]));
     }
 
     public function showWritePermissionModal($permission_id): void
@@ -99,9 +101,13 @@ class Permissions extends Component
 
     public function deletePermissionAction(): void
     {
-        Permission::find($this->id)->delete();
+        $permission = Permission::find($this->id);
+        $permissionName = $permission->name;
+        $permission->delete();
         $this->clearFieldData();
         $this->showPermissionDeleteModal = false;
+
+        Flux::toast(text: __('Permission :permission removed', ['permission' => $permissionName]));
     }
 
     public function sort($column)
