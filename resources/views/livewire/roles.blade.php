@@ -14,7 +14,9 @@
                     <flux:table :paginate="$this->roles" class="z-10 table-fixed">
                         <flux:table.columns>
                             <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:table.column>
-                            <flux:table.column sortable :sorted="$sortBy === 'team'" :direction="$sortDirection" wire:click="sort('team')">Team</flux:table.column>
+                            @if( config('permission.teams') )
+                                <flux:table.column sortable :sorted="$sortBy === 'team'" :direction="$sortDirection" wire:click="sort('team')">Team</flux:table.column>
+                            @endif
                             <flux:table.column class="max-w-32">Actions</flux:table.column>
                         </flux:table.columns>
                         <flux:table.rows>
@@ -25,13 +27,15 @@
                                         <span>{{ $role->name }}</span>
                                     </div>
                                 </flux:table.cell>
-                                <flux:table.cell class="w-full">
-                                    @if( $role->id )
-                                    <div class="flex items-center gap-2">
-                                        <span>{{ \WebFresh\UserManager\Models\WfumRole::find($role->id)->team()->name }}</span>
-                                    </div>
-                                    @endif
-                                </flux:table.cell>
+                                @if( config('permission.teams') )
+                                    <flux:table.cell class="w-full">
+                                        @if( $role->id )
+                                            <div class="flex items-center gap-2">
+                                                <span>{{ \WebFresh\UserManager\Models\WfumRole::find($role->id)->team()->name }}</span>
+                                            </div>
+                                        @endif
+                                    </flux:table.cell>
+                                @endif
                                 <flux:table.cell>
                                     <flux:tooltip content="Update role">
                                         <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block" wire:click.self="showWriteRoleModal({{ $role->id }})" />

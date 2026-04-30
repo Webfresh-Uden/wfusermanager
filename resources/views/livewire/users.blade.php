@@ -15,7 +15,9 @@
                         <flux:table.columns>
                             <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:table.column>
                             <flux:table.column sortable :sorted="$sortBy === 'email'" :direction="$sortDirection" wire:click="sort('email')">E-mail address</flux:table.column>
-                            <flux:table.column>Teams</flux:table.column>
+                            @if( config('permission.teams') )
+                                <flux:table.column>Teams</flux:table.column>
+                            @endif
                             <flux:table.column>Status</flux:table.column>
                             <flux:table.column class="max-w-32">Actions</flux:table.column>
                         </flux:table.columns>
@@ -32,25 +34,27 @@
                                         <span>{{ $user->email }}</span>
                                     </div>
                                 </flux:table.cell>
-                                <flux:table.cell class="w-full">
-                                    <div class="flex items-center gap-2">
-                                        <span>{{ implode(', ', \WebFresh\UserManager\Models\WfumUser::find($user->id)->teams()) }}</span>
-                                    </div>
-                                </flux:table.cell>
+                                @if( config('permission.teams') )
+                                    <flux:table.cell class="w-full">
+                                        <div class="flex items-center gap-2">
+                                            <span>{{ implode(', ', \WebFresh\UserManager\Models\WfumUser::find($user->id)->teams()) }}</span>
+                                        </div>
+                                    </flux:table.cell>
+                                @endif
                                 <flux:table.cell>
                                     @if( $user->id === auth()->id() )
                                         <flux:tooltip content="You cannot change your own status">
-                                            <flux:badge variant="info">Active</flux:badge>
+                                            <flux:badge color="lime">Active</flux:badge>
                                         </flux:tooltip>
                                     @else
                                         <div class="flex items-center gap-2">
                                             @if( $user->blocked )
                                                 <flux:tooltip content="Click to unblock user">
-                                                    <flux:badge wire:click="changeUserStatus({{ $user->id }})" variant="danger">Blocked</flux:badge>
+                                                    <flux:badge color="red" wire:click="changeUserStatus({{ $user->id }})" variant="solid">Blocked</flux:badge>
                                                 </flux:tooltip>
                                             @else
                                                 <flux:tooltip content="Click to block user">
-                                                    <flux:badge wire:click="changeUserStatus({{ $user->id }})" variant="success">Active</flux:badge>
+                                                    <flux:badge color="lime" wire:click="changeUserStatus({{ $user->id }})">Active</flux:badge>
                                                 </flux:tooltip>
                                             @endif
                                         </div>

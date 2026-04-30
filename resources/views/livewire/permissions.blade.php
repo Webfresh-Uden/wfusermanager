@@ -54,7 +54,7 @@
         </div>
     </flux:modal>
 
-    <flux:modal name="permission-write" class="md:w-96" wire:model.self="showPermissionWriteModal" wire:close="clearFieldData()">
+    <flux:modal flyout name="permission-write" class="md:w-96" wire:model.self="showPermissionWriteModal" wire:close="clearFieldData()">
         <div class="space-y-6">
             <div>
                 @if( $this->id !== '' )
@@ -67,6 +67,32 @@
             </div>
             <form wire:submit="writePermissionAction">
                 <flux:input wire:model="name" label="Name" placeholder="Permission name" class="mb-4" />
+                @if( config('permission.teams') )
+                    @foreach( $teams as $team )
+                        @if( $team->roles()->count() > 0 )
+                            <flux:checkbox.group wire:model="selectedRoles" class="mb-4" label="Assign to roles within {{ $team->name }}" class="mb-4">
+                                @foreach( $team->roles as $role )
+                                    @if( in_array( $role->id, $selectedRoles ) === true )
+                                        <flux:checkbox label="{{ $role->name }}" value="{{ $role->id }}" :checked="true" />
+                                    @else
+                                        <flux:checkbox label="{{ $role->name }}" value="{{ $role->id }}" />
+                                    @endif
+                                @endforeach
+                            </flux:checkbox.group>
+                        @endif
+                    @endforeach
+                @else
+                    <flux:checkbox.group wire:model="selectedRoles" label="Assign to roles" class="mb-4">
+                        @foreach( $roles as $role )
+                            @if( in_array( $role->id, $selectedRoles ) === true )
+                                <flux:checkbox label="{{ $role->name }}" value="$role->id" :checked="true" />
+                            @else
+                                <flux:checkbox label="{{ $role->name }}" value="$role->id" />
+                            @endif
+                        @endforeach
+                    </flux:checkbox.group>
+                @endif
+
                 <div class="flex">
                     <flux:spacer />
                     <flux:button type="submit" variant="primary">Save permission</flux:button>
@@ -74,6 +100,4 @@
             </form>
         </div>
     </flux:modal>
-
-
 </div>
