@@ -34,7 +34,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "WebFresh\\UserManager\\Tests\\": "tests/",
+            "WebFresh\\UserManager\\Tests\\": "tests/"
         }
     },
   "config": {
