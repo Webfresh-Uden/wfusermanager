@@ -11,7 +11,7 @@
                     <flux:heading size="xl" level="1" class="ms-4">Team management</flux:heading>
                 </div>
                 <div class="ms-4 me-4">
-                    <flux:table :paginate="$this->teams" class="z-10 table-fixed">
+                    <flux:table :paginate="$teams" class="z-10 table-fixed">
                         <flux:table.columns>
                             <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:table.column>
                             <flux:table.column class="max-w-32">Actions</flux:table.column>
@@ -26,10 +26,10 @@
                                 </flux:table.cell>
                                 <flux:table.cell>
                                     <flux:tooltip content="Update team">
-                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block" wire:click.self="showWriteTeamModal({{ $team->id }})" />
+                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block" wire:click="showWriteTeamModal({{ $team->id }})" />
                                     </flux:tooltip>
                                     <flux:tooltip content="Delete team">
-                                        <flux:icon.x-circle class="cursor-pointer text-red-500 inline-block" wire:click.self="showDeleteTeamModal({{ $team->id }})" />
+                                        <flux:icon.x-circle class="cursor-pointer text-red-500 inline-block" wire:click="showDeleteTeamModal({{ $team->id }})" />
                                     </flux:tooltip>
                                 </flux:table.cell>
                             </flux:table.row>

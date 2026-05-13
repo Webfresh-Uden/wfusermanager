@@ -15,7 +15,7 @@ class Teams extends Component
 {
     use WithPagination;
 
-    private $teams;
+    private $userTeams;
 
     public string $sortBy = 'name';
 
@@ -34,10 +34,10 @@ class Teams extends Component
     #[Layout('layouts.app')]
     public function render(): View
     {
-        $this->teams = DB::table('wfum_teams')->orderBy('name', $this->sortDirection)->paginate(15);
+        $this->userTeams = DB::table('wfum_teams')->orderBy('name', $this->sortDirection)->paginate(15);
 
         return view('wfum::livewire.teams', [
-            'teams' => $this->teams,
+            'teams' => $this->userTeams,
         ]);
     }
 

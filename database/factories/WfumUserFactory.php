@@ -7,10 +7,6 @@ use WebFresh\UserManager\Models\WfumUser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/**
- * @extends Factory<WfumUser>
- */
-#[UseModel(WfumUser::class)]
 class WfumUserFactory extends Factory
 {
     /**

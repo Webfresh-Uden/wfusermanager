@@ -2,10 +2,11 @@
 
 namespace WebFresh\UserManager\Tests;
 
-use Orchestra\Testbench\TestCase as BaseTestCase;
+use Orchestra\Testbench\TestCase as Orchestra;
+use WebFresh\UserManager\Models\WfumUser;
 use WebFresh\UserManager\UserManagerServiceProvider;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase extends Orchestra
 {
     /**
      * add the package provider
@@ -35,5 +36,21 @@ abstract class TestCase extends BaseTestCase
             'database' => ':memory:',
             'prefix'   => '',
         ]);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
+    protected function tearDown(): void
+    {
+        DirectoryEmulator::teardown();
+        parent::tearDown();
+    }
+
+    protected function user()
+    {
+        return (WfumUser::factory()->create());
     }
 }

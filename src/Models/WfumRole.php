@@ -2,6 +2,7 @@
 
 namespace WebFresh\UserManager\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Permission\Models\Role;
 
 class WfumRole extends Role
@@ -12,8 +13,8 @@ class WfumRole extends Role
         'guard_name' => 'web',
     ];
 
-    public function team()
+    public function team(): HasOne
     {
-        return Team::find($this->team_id);
+        return $this->hasOne(Team::class, 'id', 'team_id');
     }
 }

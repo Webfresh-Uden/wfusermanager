@@ -31,17 +31,17 @@
                                     <flux:table.cell class="w-full">
                                         @if( $role->id )
                                             <div class="flex items-center gap-2">
-                                                <span>{{ \WebFresh\UserManager\Models\WfumRole::find($role->id)->team()->name }}</span>
+                                                <span>{{ \WebFresh\UserManager\Models\WfumRole::find($role->id)->team()->first()->name }}</span>
                                             </div>
                                         @endif
                                     </flux:table.cell>
                                 @endif
                                 <flux:table.cell>
                                     <flux:tooltip content="Update role">
-                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block" wire:click.self="showWriteRoleModal({{ $role->id }})" />
+                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block" wire:click="showWriteRoleModal({{ $role->id }})" />
                                     </flux:tooltip>
                                     <flux:tooltip content="Delete role">
-                                        <flux:icon.x-circle class="cursor-pointer text-red-500 inline-block" wire:click.self="showDeleteRoleModal({{ $role->id }})" />
+                                        <flux:icon.x-circle class="cursor-pointer text-red-500 inline-block" wire:click="showDeleteRoleModal({{ $role->id }})" />
                                     </flux:tooltip>
                                 </flux:table.cell>
                             </flux:table.row>

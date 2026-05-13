@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Traits\HasRoles;
+use WebFresh\UserManager\Models\PermissionGroup;
 use WebFresh\UserManager\Models\Team;
 use WebFresh\UserManager\Models\WfumRole as Role;
-use WebFresh\UserManager\Models\WfumUser;
 use WebFresh\UserManager\Models\WfumUser as User;
 use Flux\Flux;
 
@@ -21,34 +23,34 @@ class Users extends Component
     use WithPagination;
 
     private $users;
-
     public string $sortBy = 'name';
-
     public string $sortDirection = 'asc';
-
     public bool $showUserWriteModal = false;
-
     public bool $showUserDeleteModal = false;
-
     public bool $showAssignRoleModal = false;
-
+    public bool $showAssignPermissionsModal = false;
     public string $name = '';
-
     public string $email = '';
-
     public string $password = '';
-
     public array $userRoles = [];
-
+    public array $userPermissions = [];
     public bool $blocked = false;
-
     public Collection $roles;
-
     public Collection $teams;
-
     public string $id = '';
+    public $permissionGroups;
 
-    public function mount(): void {}
+    // Direct permission variables
+    public $selectedTeamId;
+    public $availableTeams = [];
+    public $selectedRoleId;
+    public $availableRoles = [];
+    public $selectedPermissionGroupId = '';
+    public $selectedPermissionGroup = null;
+
+    public function mount(): void {
+        $this->permissionGroups = PermissionGroup::all();
+    }
 
     #[Layout('layouts.app')]
     public function render(): View
@@ -56,6 +58,11 @@ class Users extends Component
         $this->users = DB::table('users')->orderBy('name', $this->sortDirection)->paginate(15);
         $this->roles = Role::all();
         $this->teams = Team::all();
+
+        if( $this->selectedPermissionGroupId !== null )
+        {
+            $this->selectedPermissionGroup = PermissionGroup::find($this->selectedPermissionGroupId);
+        }
 
         return view('wfum::livewire.users', [
             'users' => $this->users,
@@ -66,7 +73,7 @@ class Users extends Component
     {
         // Loop, add and remove role link to user
         $user = User::find($this->id);
-        $roles = Role::whereIn('name', $this->userRoles)->get();
+        $roles = Role::whereIn('name', $this->availableRoles)->get();
         DB::transaction(function () use ($user, $roles) {
             DB::table('model_has_roles')->where('model_id', $user->id)->where('model_type', 'App\Models\User')->delete();
             foreach ($roles as $role) {
@@ -128,6 +135,9 @@ class Users extends Component
         $this->name = '';
         $this->email = '';
         $this->userRoles = [];
+        $this->userPermissions = [];
+        $this->availableRoles = [];
+        $this->selectedTeams = [];
     }
 
     public function deleteUserAction(): void
@@ -165,13 +175,82 @@ class Users extends Component
         $user = User::find($user_id);
         $this->id = $user->id;
         $this->userRoles = $user->userRoles();
+        $this->availableRoles = array_map(function ($role) { return $role->name; }, $this->userRoles);
         $this->showAssignRoleModal = true;
     }
 
     public function shadowlogin($user_id){
-        $user = WfumUser::find($user_id);
+        $user = User::find($user_id);
         if( $user->shadow_opt_out === false ) {
             $this->dispatch('shadowlogin', $user_id);
         }
+    }
+
+    public function updatedSelectedTeamId()
+    {
+        $user = User::find($this->id);
+        $this->availableRoles = $user->userRoles();
+        $this->userPermissions = $user->userPermissions($this->selectedTeamId);
+        $roleList = [];
+        foreach($this->availableRoles as $role) {
+            if( intval($role->team_id) === intval($this->selectedTeamId) || $this->selectedTeamId === null ) {
+                $roleList[] = $role;
+            }
+        }
+        $this->availableRoles = $roleList;
+
+        if( count($this->availableRoles) === 1 )
+        {
+            $this->selectedRoleId = $this->availableRoles[0]->id;
+        }
+    }
+
+    public function showAssignPermissionsModalWindow($user_id): void
+    {
+        $user = User::find($user_id);
+        $this->id = $user->id;
+        $this->availableRoles = $user->userRoles();
+        $this->userPermissions = $user->userPermissions();
+
+        $this->availableTeams = $user->userTeams();
+        if( count($this->availableTeams) === 1 )
+        {
+            $this->selectedTeamId = $this->availableTeams[0]['id'];
+            $this->updatedSelectedTeamId();
+        }
+
+        $this->showAssignPermissionsModal = true;
+    }
+
+    public function addDirectPermission( $permission_id ): void
+    {
+        $user = User::find($this->id);
+        $permission = Permission::find($permission_id);
+        DB::table('model_has_permissions')->insertOrIgnore([
+            'permission_id' => $permission->id,
+            'model_id' => $this->id,
+            'model_type' => 'App\Models\User',
+            'team_id' => $this->selectedTeamId,
+        ]);
+
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
+        $this->userPermissions = $user->userPermissions();
+
+        Flux::toast(text: __('Permission :permission added', ['permission' => $permission->name]));
+    }
+
+    public function removeDirectPermission( $permission_id ): void
+    {
+        $user = User::find($this->id);
+        $permission = Permission::find($permission_id);
+
+        DB::table('model_has_permissions')->where('permission_id', $permission->id)->where('model_type', 'App\Models\User')->where('model_id', $this->id)->delete();
+
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
+        $this->userPermissions = $user->userPermissions();
+
+        Flux::toast(text: __('Permission :permission removed', ['permission' => $permission->name]));
     }
 }

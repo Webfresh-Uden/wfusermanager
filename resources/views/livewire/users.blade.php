@@ -37,24 +37,28 @@
                                 @if( config('permission.teams') )
                                     <flux:table.cell class="w-full">
                                         <div class="flex items-center gap-2">
-                                            <span>{{ implode(', ', \WebFresh\UserManager\Models\WfumUser::find($user->id)->teams()) }}</span>
+                                            <span>
+                                                @foreach( \WebFresh\UserManager\Models\WfumUser::find($user->id)->userTeams() as $userTeam )
+                                                    {{ $userTeam['name'] }},
+                                                @endforeach
+                                            </span>
                                         </div>
                                     </flux:table.cell>
                                 @endif
                                 <flux:table.cell>
                                     @if( $user->id === auth()->id() )
                                         <flux:tooltip content="You cannot change your own status">
-                                            <flux:badge color="lime">Active</flux:badge>
+                                            <flux:badge color="gray">Active</flux:badge>
                                         </flux:tooltip>
                                     @else
                                         <div class="flex items-center gap-2">
                                             @if( $user->blocked )
                                                 <flux:tooltip content="Click to unblock user">
-                                                    <flux:badge color="red" wire:click="changeUserStatus({{ $user->id }})" variant="solid">Blocked</flux:badge>
+                                                    <flux:badge color="red" style="cursor:pointer;" wire:click="changeUserStatus({{ $user->id }})" variant="solid">Blocked</flux:badge>
                                                 </flux:tooltip>
                                             @else
                                                 <flux:tooltip content="Click to block user">
-                                                    <flux:badge color="lime" wire:click="changeUserStatus({{ $user->id }})">Active</flux:badge>
+                                                    <flux:badge color="lime"  style="cursor:pointer;" wire:click="changeUserStatus({{ $user->id }})">Active</flux:badge>
                                                 </flux:tooltip>
                                             @endif
                                         </div>
@@ -62,27 +66,36 @@
                                 </flux:table.cell>
                                 <flux:table.cell>
                                     @if( config('wfusermanager.allow_shadow_login') === true && $user->shadow_opt_out === 0 )
-                                        <flux:tooltip content="Login as this user">
-                                            <flux:icon.square-2-stack class="cursor-pointer text-orange-500 inline-block me-4" wire:click.self="shadowlogin({{ $user->id }})" />
-                                        </flux:tooltip>
+                                        @if( $user->id !== auth()->id() )
+                                            <flux:tooltip content="Login as this user">
+                                                <flux:icon.square-2-stack class="cursor-pointer inline-block me-4" wire:click="shadowlogin({{ $user->id }})" />
+                                            </flux:tooltip>
+                                        @else
+                                            <flux:tooltip content="You cannot shadow login as yourself">
+                                                <flux:icon.square-2-stack color="lightgray" class="inline-block me-4" />
+                                            </flux:tooltip>
+                                        @endif
                                     @elseif( config('wfusermanager.allow_shadow_login') === true && $user->shadow_opt_out === 1 )
                                         <flux:tooltip content="User disabled shadow login in their settings">
                                             <flux:icon.exclamation-triangle color="red" class="cursor-pointer inline-block me-4" />
                                         </flux:tooltip>
                                     @endif
                                     <flux:tooltip content="Assign roles to user">
-                                        <flux:icon.identification class="cursor-pointer text-orange-500 inline-block me-4" wire:click.self="showAssignRoleModalWindow({{ $user->id }})" />
+                                        <flux:icon.identification class="cursor-pointer text-orange-500 inline-block me-4" wire:click="showAssignRoleModalWindow({{ $user->id }})" />
+                                    </flux:tooltip>
+                                    <flux:tooltip content="Assign direct permissions to user">
+                                        <flux:icon.puzzle-piece class="cursor-pointer text-orange-500 inline-block me-4" wire:click="showAssignPermissionsModalWindow({{ $user->id }})" />
                                     </flux:tooltip>
                                     <flux:tooltip content="Update user">
-                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block me-4" wire:click.self="showWriteUserModalWindow({{ $user->id }})" />
+                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block me-4" wire:click="showWriteUserModalWindow({{ $user->id }})" />
                                     </flux:tooltip>
                                     @if( $user->id === auth()->id() )
-                                        <flux:tooltip content="You cannot change your own status">
-                                            <flux:icon.x-circle class="cursor-pointer text-gray-500 inline-block" />
+                                        <flux:tooltip content="You cannot delete your own user account">
+                                            <flux:icon.x-circle color="lightgray" class="text-gray-500 inline-block" />
                                         </flux:tooltip>
                                     @else
                                         <flux:tooltip content="Delete user">
-                                            <flux:icon.x-circle class="cursor-pointer text-red-500 inline-block" wire:click.self="showDeleteUserModalWindow({{ $user->id }})" />
+                                            <flux:icon.x-circle class="cursor-pointer text-red-500 inline-block" wire:click="showDeleteUserModalWindow({{ $user->id }})" />
                                         </flux:tooltip>
                                     @endif
                                 </flux:table.cell>
@@ -140,9 +153,9 @@
             <form wire:submit="assignRoleAction">
                 @foreach( $teams as $team )
                     @if( $team->roles()->count() > 0 )
-                        <flux:checkbox.group wire:model="userRoles" label="{{ $team->name }}" class="mb-4">
+                        <flux:checkbox.group wire:model="availableRoles" label="{{ $team->name }}" class="mb-4">
                             @foreach( $team->roles as $role )
-                                @if( in_array( $role->name, $userRoles ) === true )
+                                @if( in_array( $role->name, $availableRoles ) === true )
                                     <flux:checkbox label="{{ $role->name }}" value="{{ $role->name }}" :checked="true" />
                                 @else
                                     <flux:checkbox label="{{ $role->name }}" value="{{ $role->name }}" />
@@ -155,6 +168,73 @@
                     <flux:spacer />
                     <flux:button type="submit" variant="primary">Save roles</flux:button>
                 </div>
+            </form>
+        </div>
+    </flux:modal>
+
+    <flux:modal flyout name="user-assign-permissions" class="md:w-96" wire:model.self="showAssignPermissionsModal" wire:poll.visible wire:close="clearFieldData()">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Assign direct permissions</flux:heading>
+                <flux:text class="mt-2">Assign direct permissions directly to the selected user</flux:text>
+            </div>
+            <form wire:submit="assignPermissionsAction">
+                @if( config('permission.teams') && count($availableTeams) > 1 )
+                    <flux:select wire:model.live="selectedTeamId" size="sm" placeholder="Select team" class="mb-4">
+                        @foreach( $availableTeams as $team )
+                            <flux:select.option value="{{ $team['id'] }}" wire:key="{{ $team['id'] }}">{{ $team['name'] }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                @endif
+                @if( (config('permission.teams') && $selectedTeamId !== null) || !config('permission.teams') )
+                    @if( count($availableRoles) > 1 )
+                        <flux:select wire:model.live="selectedRoleId" size="sm" placeholder="Select role" class="mb-4">
+                            @foreach( $availableRoles as $role )
+                                <flux:select.option value="{{ $role->name }}" wire:key="{{ $role->name }}">
+                                    {{ $role->name }}
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    @else
+                        <flux:text class="mb-4">
+                            The selected user has a single role.<br/>
+                            <strong>
+                                {{ $roles->find($selectedRoleId)->name }}
+                                @if( config('permission.teams') )
+                                    ({{ $roles->find($selectedRoleId)->team->name }})
+                                @endif
+                            </strong><br/><br/>
+                            Please select a permission group to edit.
+                        </flux:text>
+                    @endif
+                    <flux:select wire:model.live="selectedPermissionGroupId" size="sm" placeholder="Select permission group" class="mb-4">
+                        @foreach( $permissionGroups as $pmg )
+                            <flux:select.option value="{{ $pmg->id }}" wire:key="pmg_{{ $pmg->id }}">{{ $pmg->name }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                @endif
+                @if( $selectedPermissionGroup !== null )
+                    <flux:table container:class="max-h-80">
+                        <flux:table.rows>
+                            <flux:table.row>
+                                <flux:table.cell style="background-color:#EEEEEE;border-top: 2px solid #888888;border-bottom: 2px solid #888888;"><strong>{{ $selectedPermissionGroup->name }}</strong></flux:table.cell>
+                                <flux:table.cell align="center" class="text-center" style="border-top: 2px solid #888888;border-bottom: 2px solid #888888;width:40px;background-color:#EEEEEE;">&nbsp;</flux:table.cell>
+                            </flux:table.row>
+                            @foreach( $selectedPermissionGroup->permissions as $pml )
+                                <flux:table.row wire:key="pml-{{ $pml->id }}">
+                                    <flux:table.cell>{{ $pml->name }}</flux:table.cell>
+                                    <flux:table.cell align="center" class="text-center" style="width:40px;text-align:center;">
+                                        @if( in_array( $pml->name, $userPermissions ) === true )
+                                            <flux:icon.check-circle wire:click="removeDirectPermission({{ $pml->id }})" variant="micro" class="text-green-500 dark:text-green-300 curser-pointer" style="cursor:pointer;"/>
+                                        @else
+                                            <flux:icon.x-circle wire:click="addDirectPermission({{ $pml->id }})" variant="micro" class="text-red-500 dark:text-red-300 cursor-pointer" />
+                                        @endif
+                                    </flux:table.cell>
+                                </flux:table.row>
+                            @endforeach
+                        </flux:table.rows>
+                    </flux:table>
+                @endif
             </form>
         </div>
     </flux:modal>

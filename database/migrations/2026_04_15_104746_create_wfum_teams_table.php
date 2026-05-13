@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('wfum_teams', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('team_id');
+            $table->unsignedBigInteger('team_id')->nullable();
             $table->string('name');
             $table->timestamps();
         });

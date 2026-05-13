@@ -11,8 +11,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "WebFresh\\UserManager\\": "src",
-      "WebFresh\\UserManager\\Database\\Factories\\": "database/factories/"
+      "WebFresh\\UserManager\\": "src"
     }
   },
   "extra": {
@@ -34,7 +33,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "WebFresh\\UserManager\\Tests\\": "tests/"
+            "WebFresh\\UserManager\\Tests\\": "tests/",
+            "WebFresh\\UserManager\\Database\\Factories\\": "database/factories/"
         }
     },
   "config": {

@@ -47,6 +47,7 @@ class WfumInstallCommand extends Command
 
         $team = Team::create([
             'name' => 'Administrators',
+            'team_id' => 0
         ]);
 
         $role = Role::create(['name' => 'Developer', 'team_id' => $team->id]);

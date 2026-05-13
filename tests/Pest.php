@@ -1,5 +1,6 @@
 <?php
 
-uses(
-    \WebFresh\UserManager\Tests\TestCase::class
-)->in('Feature');
+use WebFresh\UserManager\Tests\TestCase;
+
+pest()->extend(TestCase::class)
+    ->in('Feature');

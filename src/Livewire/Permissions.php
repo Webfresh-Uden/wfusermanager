@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Spatie\Permission\Models\Permission;
+use WebFresh\UserManager\Models\PermissionGroup;
+use WebFresh\UserManager\Models\WfumPermission as Permission;
 use WebFresh\UserManager\Models\WfumRole as Role;
 use WebFresh\UserManager\Models\Team;
+use Flux\Flux;
 
 #[Title('Permissions')]
 class Permissions extends Component
@@ -21,13 +23,15 @@ class Permissions extends Component
 
     public string $sortBy = 'name';
 
-    public $selectedRoles = [];
-
     public Collection $roles;
 
     public Collection $teams;
 
+    public Collection $permissionGroups;
+
     public string $sortDirection = 'asc';
+
+    public $permission_group_id = null;
 
     public bool $showPermissionWriteModal = false;
 
@@ -40,6 +44,7 @@ class Permissions extends Component
     public function mount(): void {
         $this->roles = Role::orderBy('name', 'ASC')->get();
         $this->teams = Team::orderBy('name', 'ASC')->get();
+        $this->permissionGroups = PermissionGroup::orderBy('name', 'ASC')->get();
     }
 
     #[Layout('layouts.app')]
@@ -49,6 +54,7 @@ class Permissions extends Component
 
         return view('wfum::livewire.permissions', [
             'permissions' => $this->permissions,
+            'permissionGroups' => $this->permissionGroups
         ]);
     }
 
@@ -58,18 +64,8 @@ class Permissions extends Component
             'id' => $this->id,
         ], [
             'name' => $this->name,
+            'permission_group_id' => $this->permission_group_id,
         ]);
-
-        $selectedRoles = $this->selectedRoles;
-        DB::transaction(function () use ($permission, $selectedRoles) {
-            DB::table('role_has_permissions')->whereNotIn('role_id', $selectedRoles)->delete();
-            foreach ($selectedRoles as $role) {
-                DB::table('role_has_permissions')->insertOrIgnore([
-                    'permission_id' => $permission->id,
-                    'role_id' => $role,
-                ]);
-            }
-        });
 
         $this->clearFieldData();
         $this->showPermissionWriteModal = false;
@@ -81,6 +77,7 @@ class Permissions extends Component
     {
         $permission = Permission::find($permission_id);
         $this->name = $permission->name;
+        $this->permission_group_id = $permission->permission_group_id;
         $this->id = $permission->id;
         $this->selectedRoles = DB::table('role_has_permissions')->where('permission_id', $permission->id)->pluck('role_id')->toArray();
         $this->showPermissionWriteModal = true;
@@ -96,6 +93,7 @@ class Permissions extends Component
     {
         $this->id = '';
         $this->name = '';
+        $this->permission_group_id = null;
         $this->selectedRoles = [];
     }
 
