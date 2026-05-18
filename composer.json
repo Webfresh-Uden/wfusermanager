@@ -12,7 +12,7 @@
   "autoload": {
     "psr-4": {
       "WebFresh\\UserManager\\": "src",
-      "WebFresh\\UserManager\\Database\\Factories\\": "database/factories/"
+      "WebFresh\\UserManager\\Database\\Factories\\": "database/factories"
     }
   },
   "extra": {

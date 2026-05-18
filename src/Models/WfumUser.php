@@ -72,4 +72,16 @@ class WfumUser extends Authenticatable
 
         return $return->pluck('permissions.name')->toArray();
     }
+
+    public function initials(): string
+    {
+        $parts = explode(' ', trim($this->name));
+        $initials = '';
+
+        foreach ($parts as $part) {
+            $initials .= strtoupper(substr($part, 0, 1));
+        }
+
+        return substr($initials, 0, 2);
+    }
 }
