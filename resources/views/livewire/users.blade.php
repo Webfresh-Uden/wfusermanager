@@ -15,7 +15,7 @@
                         <flux:table.columns>
                             <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:table.column>
                             <flux:table.column sortable :sorted="$sortBy === 'email'" :direction="$sortDirection" wire:click="sort('email')">E-mail address</flux:table.column>
-                            @if( config('permission.teams') )
+                            @if( config('permission.teams') && (int)session('team_id') === 0 )
                                 <flux:table.column>Teams</flux:table.column>
                             @endif
                             <flux:table.column>Status</flux:table.column>
@@ -29,12 +29,20 @@
                                         <span>{{ $user->name }}</span>
                                     </div>
                                 </flux:table.cell>
-                                <flux:table.cell>
-                                    <div class="flex items-center gap-2">
-                                        <span>{{ $user->email }}</span>
-                                    </div>
-                                </flux:table.cell>
-                                @if( config('permission.teams') )
+                                @if( config('permission.teams') && (int)session('team_id') === 0 )
+                                    <flux:table.cell>
+                                        <div class="flex items-center gap-2">
+                                            <span>{{ $user->email }}</span>
+                                        </div>
+                                    </flux:table.cell>
+                                @else
+                                    <flux:table.cell class="w-full">
+                                        <div class="flex items-center gap-2">
+                                            <span>{{ $user->email }}</span>
+                                        </div>
+                                    </flux:table.cell>
+                                @endif
+                                @if( config('permission.teams') && (int)session('team_id') === 0 )
                                     <flux:table.cell class="w-full">
                                         <div class="flex items-center gap-2">
                                             <span>
@@ -65,7 +73,7 @@
                                     @endif
                                 </flux:table.cell>
                                 <flux:table.cell>
-                                    @if( config('wfusermanager.allow_shadow_login') === true && $user->shadow_opt_out === 0 )
+                                    @if( config('wfusermanager.allow_shadow_login') === true && (int)$user->shadow_opt_out === 0 )
                                         @if( $user->id !== auth()->id() )
                                             <flux:tooltip content="Login as this user">
                                                 <flux:icon.square-2-stack class="cursor-pointer inline-block me-4" wire:click="shadowlogin({{ $user->id }})" />
@@ -75,7 +83,7 @@
                                                 <flux:icon.square-2-stack color="lightgray" class="inline-block me-4" />
                                             </flux:tooltip>
                                         @endif
-                                    @elseif( config('wfusermanager.allow_shadow_login') === true && $user->shadow_opt_out === 1 )
+                                    @elseif( config('wfusermanager.allow_shadow_login') === true && (int)$user->shadow_opt_out === 1 )
                                         <flux:tooltip content="User disabled shadow login in their settings">
                                             <flux:icon.exclamation-triangle color="red" class="cursor-pointer inline-block me-4" />
                                         </flux:tooltip>
@@ -151,19 +159,29 @@
                 <flux:text class="mt-2">Assign roles to the selected user</flux:text>
             </div>
             <form wire:submit="assignRoleAction">
-                @foreach( $teams as $team )
-                    @if( $team->roles()->count() > 0 )
-                        <flux:checkbox.group wire:model="availableRoles" label="{{ $team->name }}" class="mb-4">
-                            @foreach( $team->roles as $role )
-                                @if( in_array( $role->name, $availableRoles ) === true )
-                                    <flux:checkbox label="{{ $role->name }}" value="{{ $role->name }}" :checked="true" />
-                                @else
-                                    <flux:checkbox label="{{ $role->name }}" value="{{ $role->name }}" />
-                                @endif
+                @if( config('permission.teams') && (int)session('team_id') == 0 )
+                    @foreach( $teams as $team )
+                        @if( $team->roles()->count() > 0 )
+                            <flux:checkbox.group wire:key="rolegroup{{ $team->id }}" wire:model.live="availableRoles" label="{{ $team->name }}" class="mb-4">
+                                @foreach( $team->roles()->get() as $role )
+                                    <flux:checkbox wire:key="role{{ $role->id }}" label="{{ $role->name }}" value="{{ $role->id }}" />
+                                @endforeach
+                            </flux:checkbox.group>
+                        @endif
+                    @endforeach
+                @elseif( config('permission.teams') && (int)session('team_id') > 0 )
+                    @php $subteam = $teams->where('id', (int)session('team_id'))->first(); @endphp
+                    @if( $subteam->roles()->count() > 0 )
+                        <flux:checkbox.group wire:key="rolegroup{{ $subteam->id }}" wire:model.live="availableRoles" label="{{ $subteam->name }}" class="mb-4">
+                            @foreach( $subteam->roles()->get() as $role )
+                                <flux:checkbox wire:key="role{{ $role->id }}" label="{{ $role->name }}" value="{{ $role->id }}" />
                             @endforeach
                         </flux:checkbox.group>
+                    @else
+                        <flux:text class="mb-4">Environment has no roles to assign.</flux:text>
                     @endif
-                @endforeach
+                @else
+                @endif
                 <div class="flex">
                     <flux:spacer />
                     <flux:button type="submit" variant="primary">Save roles</flux:button>

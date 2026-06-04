@@ -42,7 +42,13 @@ class Roles extends Component
     #[Layout('layouts.app')]
     public function render(): View
     {
-        $this->roles = DB::table('roles')->orderBy('name', $this->sortDirection)->paginate(15);
+        $this->roles = Role::orderBy('name', $this->sortDirection)->paginate(15);
+        if ((int)session('team_id') > 0) {
+            $filteredCollection = $this->roles->filter(function ($role) {
+                return $role->team_id === (int)session('team_id');
+            });
+            $this->roles->setCollection($filteredCollection);
+        }
         $this->teams = Team::all();
 
         return view('wfum::livewire.roles', [
@@ -52,13 +58,18 @@ class Roles extends Component
 
     public function writeRoleAction(): void
     {
+        if( (int)$this->team_id > 0 ) {
+            $teamMerge = ['team_id' => (int)$this->team_id];
+        }
+        if( (int)session('team_id') > 0 ) {
+            $teamMerge = ['team_id' => (int)session('team_id')];
+        }
         Role::updateOrCreate([
             'id' => $this->id,
-        ], [
+        ], array_merge($teamMerge, [
             'name' => $this->name,
-            'team_id' => $this->team_id,
             'guard_name' => $this->guard_name,
-        ]);
+        ]));
 
         $this->clearFieldData();
         $this->showRoleWriteModal = false;

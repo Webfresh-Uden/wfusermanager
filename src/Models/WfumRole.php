@@ -13,6 +13,10 @@ class WfumRole extends Role
         'guard_name' => 'web',
     ];
 
+    protected $attributes = [
+        'team_id' => null
+    ];
+
     public function team(): HasOne
     {
         return $this->hasOne(Team::class, 'id', 'team_id');

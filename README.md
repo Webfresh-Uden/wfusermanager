@@ -52,9 +52,29 @@ Add this to add a link to the User Manager settings for admins:
         <flux:navmenu.item :href="route('users.index')" icon="user">{{ __('Users') }}</flux:navmenu.item>
         <flux:navmenu.item :href="route('roles.index')" icon="identification">{{ __('Roles') }}</flux:navmenu.item>
         <flux:navmenu.item :href="route('permissions.index')" icon="swatch">{{ __('Permissions') }}</flux:navmenu.item>
+        <flux:navmenu.item :href="route('permissions.groups')" icon="inbox-stack">{{ __('Permission Groups') }}</flux:navmenu.item>
+        <flux:navmenu.item :href="route('permissions.matrix')" icon="inbox-stack">{{ __('Permissions Matrix') }}</flux:navmenu.item>
     </flux:navmenu>
 </flux:dropdown>
 ```
+Dashboard statistics component:
+- __resources/views/dashboard.blade.php__
+Add this to show some basic statistics on the dashboard:
+```
+<livewire:wfum::components.dashboard/>
+```
+## Testing
+The package uses Pest for testing. To run the tests, add the following lines to the project's composer.json:
+```
+"autoload-dev": {
+    "psr-4": {
+        "WebFresh\\UserManager\\Tests\\": "vendor/webfresh/usermanager/tests/",
+        "WebFresh\\UserManager\\Database\\Factories\\": "vendor/webfresh/usermanager/database/factories"
+    }
+},  
+```
+Then run the usual Laravel project test to run the tests
+
 ## Done
 - Create package
 - Configure composer.json's dependencies
@@ -65,12 +85,15 @@ Add this to add a link to the User Manager settings for admins:
 - Created migration for team definitions (We want named teams!)
 - Created migrations for Shadow Logins and Blocked Users
 - Created Livewire components for Shadow Logins and User Settings
+- Create Tests
+- Disable deletion of said roles and permissions
 ## ToDo
 ### Console and back-end updates
-- Prepopulate permissions and roles for our user manager
-- Disable deletion of said roles and permissions
 - Finish console command
-- Create Tests
+- Prepopulate permissions and roles for the user manager
+  - Create a seeder to create the default permissions and roles for the user manager.
+  - Assign the "User Manager" role to the user who runs the installation command.
+- Update the user manager to operate without a team ID present.
 ### Default workflow hacks
 - Add the appropriate team ID when a user registers by itself.
 ### GUI updates

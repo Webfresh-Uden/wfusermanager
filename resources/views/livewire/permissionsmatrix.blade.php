@@ -10,16 +10,27 @@
                         <flux:table.columns sticky>
                             <flux:table.column class="bg-zinc-800! hover:bg-zinc-700!" style="width: auto;"></flux:table.column>
                             @php $permissionColumns = []; @endphp
-                            @foreach( $teams as $team )
-                                <flux:table.column style="width:40px;align-content: flex-end;border-left: 2px solid #888888;border-right: 2px solid #888888;"><div style="writing-mode:sideways-lr;"><strong>{{ $team->name }}</strong></div></flux:table.column>
+                            @if( (int)session('team_id') > 0 )
+                                @php $subteam = $teams->where('id', (int)session('team_id'))->first(); @endphp
                                 @php $permissionColumns[] = 'T'; @endphp
                                 @foreach( $roles as $role )
-                                    @if($role->team_id === $team->id )
+                                    @if($role->team_id === $subteam->id )
                                         <flux:table.column style="width:40px;align-content: flex-end;"><div style="writing-mode:sideways-lr;">{{ $role->name }}</div></flux:table.column>
                                         @php $permissionColumns[] = 'R'; @endphp
                                     @endif
                                 @endforeach
-                            @endforeach
+                            @else
+                                @foreach( $teams as $team )
+                                    <flux:table.column style="width:40px;align-content: flex-end;border-left: 2px solid #888888;border-right: 2px solid #888888;"><div style="writing-mode:sideways-lr;"><strong>{{ $team->name }}</strong></div></flux:table.column>
+                                    @php $permissionColumns[] = 'T'; @endphp
+                                    @foreach( $roles as $role )
+                                        @if($role->team_id === $team->id )
+                                            <flux:table.column style="width:40px;align-content: flex-end;"><div style="writing-mode:sideways-lr;">{{ $role->name }}</div></flux:table.column>
+                                            @php $permissionColumns[] = 'R'; @endphp
+                                        @endif
+                                    @endforeach
+                                @endforeach
+                            @endif
                             <flux:table.column align="center" class="text-center" style="width:40px;">&nbsp;</flux:table.column>
                         </flux:table.columns>
                         <flux:table.rows>
@@ -37,10 +48,9 @@
                                 @foreach( $pmg->permissions as $pml )
                                     <flux:table.row wire:key="pml-{{ $pml->id }}">
                                         <flux:table.cell>{{ $pml->name }}</flux:table.cell>
-                                        @foreach( $teams as $team )
-                                            <flux:table.cell align="center" variant="strong" class="text-center" style="background-color:#EEEEEE;width:40px;border-left: 2px solid #888888;border-right: 2px solid #888888;">&nbsp;</flux:table.cell>
+                                        @if( (int)session('team_id') > 0 )
                                             @foreach( $roles as $role )
-                                                @if($role->team_id === $team->id )
+                                                @if($role->team_id === (int)session('team_id') )
                                                     <flux:table.cell align="center" class="text-center" style="width:40px;text-align:center;">
                                                         @if( $pmg->id === $pml->permission_group_id && $role->hasPermissionTo($pml->name) )
                                                             <flux:icon.check-circle wire:click="removePermission({{ $pml->id }}, {{ $role->id }})" variant="micro" class="text-green-500 dark:text-green-300 curser-pointer" style="cursor:pointer;"/>
@@ -50,7 +60,22 @@
                                                     </flux:table.cell>
                                                 @endif
                                             @endforeach
-                                        @endforeach
+                                        @else
+                                            @foreach( $teams as $team )
+                                                <flux:table.cell align="center" variant="strong" class="text-center" style="background-color:#EEEEEE;width:40px;border-left: 2px solid #888888;border-right: 2px solid #888888;">&nbsp;</flux:table.cell>
+                                                @foreach( $roles as $role )
+                                                    @if($role->team_id === $team->id )
+                                                        <flux:table.cell align="center" class="text-center" style="width:40px;text-align:center;">
+                                                            @if( $pmg->id === $pml->permission_group_id && $role->hasPermissionTo($pml->name) )
+                                                                <flux:icon.check-circle wire:click="removePermission({{ $pml->id }}, {{ $role->id }})" variant="micro" class="text-green-500 dark:text-green-300 curser-pointer" style="cursor:pointer;"/>
+                                                            @else
+                                                                <flux:icon.x-circle wire:click="addPermission({{ $pml->id }}, {{ $role->id }})" variant="micro" class="text-red-500 dark:text-red-300 cursor-pointer" />
+                                                            @endif
+                                                        </flux:table.cell>
+                                                    @endif
+                                                @endforeach
+                                            @endforeach
+                                        @endif
                                         <flux:table.cell align="center" class="text-center" style="width:40px;">&nbsp;</flux:table.cell>
                                     </flux:table.row>
                                 @endforeach
