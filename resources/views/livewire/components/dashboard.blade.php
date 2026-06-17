@@ -17,6 +17,7 @@
                 </flux:table.row>
             </flux:table.rows>
         </flux:table>
+        {{ App::currentLocale() }}
     </div>
     <div class="p-4 relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
         <flux:heading size="lg" class="mb-2">{{ __('Permission statistics') }}</flux:heading>
@@ -54,12 +55,12 @@
         <flux:heading size="lg" class="mt-4 mb-2">{{ __('Credits') }}</flux:heading>
         <flux:text>
             <strong>User manager</strong> by <strong>Roel van Lierop-Megens</strong><br/>
-            Commissioned by <strong>Webfresh B.V.</strong><br/>
+            {{ __('Commissioned by') }} <strong>Webfresh B.V.</strong><br/>
         </flux:text>
         <flux:table>
             <flux:table.rows>
                 <flux:table.row>
-                    <flux:table.cell><strong>Current version</strong></flux:table.cell>
+                    <flux:table.cell><strong>{{ __('Current version') }}</strong></flux:table.cell>
                     <flux:table.cell class="text-end">DEV</flux:table.cell>
                 </flux:table.row>
             </flux:table.rows>

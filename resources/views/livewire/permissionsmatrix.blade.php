@@ -3,7 +3,7 @@
         <div class="grid auto-rows-min gap-4 grid-cols-1">
             <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
                 <div class="z-10 mt-4 mb-4">
-                    <flux:heading size="xl" level="1" class="ms-4">Permissions matrix</flux:heading>
+                    <flux:heading size="xl" level="1" class="ms-4">{{ __('Permissions matrix') }}</flux:heading>
                 </div>
                 <div class="ms-4 me-4 overflow-x-hidden" style="overflow-y: scroll;display: block;max-height: calc(100% - 64px);">
                     <flux:table container:class="max-h-80">

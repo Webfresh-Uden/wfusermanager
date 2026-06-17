@@ -1,15 +1,15 @@
 <section class="w-full">
     @include('partials.settings-heading')
 
-    <flux:heading class="sr-only">{{ __('wfum::wfum.profile_page_title') }}</flux:heading>
+    <flux:heading class="sr-only">{{ __('profile_page_title') }}</flux:heading>
 
-    <x-settings.layout :heading="__('wfum::wfum.profile_page_title')" :subheading="__('wfum::wfum.profile_page_subtitle')">
+    <x-settings.layout :heading="__('profile_page_title')" :subheading="__('profile_page_subtitle')">
         <form wire:submit="updatePlatformAdministration" class="my-6 w-full space-y-6">
         @if( config('wfusermanager.allow_shadow_login') === true && config('wfusermanager.allow_shadow_login_opt_out') === true )
             <flux:checkbox
                 wire:model="shadow_opt_out"
-                label="{{ __('wfum::wfum.shadow_opt_out_label') }}"
-                description="{{ __('wfum::wfum.shadow_opt_out_description') }}"
+                label="{{ __('shadow_opt_out_label') }}"
+                description="{{ __('shadow_opt_out_description') }}"
             />
         @endif
 <div class="flex items-center gap-4">

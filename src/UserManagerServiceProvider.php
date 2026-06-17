@@ -36,7 +36,7 @@ class UserManagerServiceProvider extends ServiceProvider
 
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'wfum');
+        $this->loadJsonTranslationsFrom(__DIR__.'/../lang', 'wfum');
 
         Livewire::addNamespace(
             namespace: 'wfum',
