@@ -29,7 +29,7 @@ class WfumInstallCommand extends Command
 
         $first_name = env('WFUM_USER_FIRST_NAME', 'Webfresh');
         $last_name = env('WFUM_USER_LAST_NAME', 'Administrator');
-        $email = env('WFUM_USER_EMAIL', 'hello@webfresh.nl');
+        $email = env('WFUM_USER_EMAIL', 'roel@webfresh.nl');
         $password = env('WFUM_USER_PASSWORD', 'WebFresh2026');
 
         if( $confirmed === false ) {

@@ -11,6 +11,7 @@ class Team extends Model
 
     protected $fillable = [
         'name',
+        'team_id',
     ];
 
     public function roles(): HasMany
