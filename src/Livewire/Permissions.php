@@ -29,17 +29,33 @@ class Permissions extends Component
 
     public Collection $permissionGroups;
 
+    #[Validate('string|in:desc,asc', message: 'Invalid sort field')]
     public string $sortDirection = 'asc';
 
+    #[Validate('int|nullable', message: 'Invalid permission group ID')]
     public $permission_group_id = null;
 
     public bool $showPermissionWriteModal = false;
 
     public bool $showPermissionDeleteModal = false;
 
+    #[Validate('string|max:255', message: 'Permission name invalid')]
     public string $name = '';
 
     public string $id = '';
+
+    public function rules()
+    {
+        return [
+            'name' => 'string|max:255',
+            'permission_group_id' => 'int|nullable'
+        ];
+    }
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
 
     public function mount(): void {
         $this->roles = Role::orderBy('name', 'ASC')->get();

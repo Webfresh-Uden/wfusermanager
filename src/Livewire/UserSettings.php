@@ -16,6 +16,17 @@ class UserSettings extends Component
 
     public $shadow_opt_out = false;
 
+    public function rules()
+    {
+        return [
+        ];
+    }
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
+
     public function mount(): void {
         $this->user = WfumUser::find(auth()->user()->id);
         $this->shadow_opt_out = $this->user->shadow_opt_out;

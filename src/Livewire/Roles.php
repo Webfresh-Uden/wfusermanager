@@ -21,16 +21,34 @@ class Roles extends Component
 
     public string $sortBy = 'name';
 
+    public function rules()
+    {
+        return [
+            'name' => 'string|max:255',
+            'team_id' => 'integer'
+        ];
+    }
+
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
+
+    #[Validate('string|in:desc,asc', message: 'Invalid sort field')]
     public string $sortDirection = 'asc';
 
     public bool $showRoleWriteModal = false;
 
     public bool $showRoleDeleteModal = false;
 
+    #[Validate('string|max:255', message: 'Invalid role name')]
     public string $name = '';
 
+    #[Validate('integer', message: 'Invalid role ID')]
     public string $id = '';
 
+    #[Validate('integer', message: 'Invalid team ID')]
     public string $team_id = '';
 
     public string $guard_name = 'web';

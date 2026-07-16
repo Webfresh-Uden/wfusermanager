@@ -24,13 +24,17 @@ class Users extends Component
 
     private $users;
     public string $sortBy = 'name';
+    #[Validate('string|in:desc,asc', message: 'Invalid sort field')]
     public string $sortDirection = 'asc';
     public bool $showUserWriteModal = false;
     public bool $showUserDeleteModal = false;
     public bool $showAssignRoleModal = false;
     public bool $showAssignPermissionsModal = false;
+    #[Validate('string|max:255', message: 'User name invalid')]
     public string $name = '';
+    #[Validate('string|email', message: 'Invalid email address')]
     public string $email = '';
+    #[Validate('string|min:8', message: 'Password must be at least 8 characters')]
     public string $password = '';
     public array $userRoles = [];
     public array $userPermissions = [];
@@ -38,6 +42,7 @@ class Users extends Component
     public Collection $roles;
     public Collection $teams;
     public string $id = '';
+    #[Validate('string|nullable', message: 'Invalid permission group ID')]
     public $permissionGroups;
 
     // Direct permission variables
@@ -47,6 +52,20 @@ class Users extends Component
     public $availableRoles = [];
     public $selectedPermissionGroupId = '';
     public $selectedPermissionGroup = null;
+
+    public function rules()
+    {
+        return [
+            'name' => 'string|max:255',
+            'email' => 'string|email',
+            'password' => 'string|min:8'
+        ];
+    }
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
 
     public function mount(): void {
         $this->permissionGroups = PermissionGroup::all();

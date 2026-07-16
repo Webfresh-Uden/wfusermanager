@@ -19,15 +19,29 @@ class Teams extends Component
 
     public string $sortBy = 'name';
 
+    #[Validate('string|in:desc,asc', message: 'Invalid sort field')]
     public string $sortDirection = 'asc';
 
     public bool $showTeamWriteModal = false;
 
     public bool $showTeamDeleteModal = false;
 
+    #[Validate('string|max:255', message: 'Invalid team name')]
     public string $name = '';
 
     public string $id = '';
+
+    public function rules()
+    {
+        return [
+            'name' => 'string|max:255'
+        ];
+    }
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
 
     public function mount(): void {}
 

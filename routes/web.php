@@ -11,7 +11,7 @@ use WebFresh\UserManager\Livewire\PermissionGroups;
 
 Route::group([
     'prefix' => 'admin',
-    'middleware' => ['web', 'auth'],
+    'middleware' => ['web', 'auth', 'verified'],
 ], function () {
     Route::livewire('teams', Teams::class)->name('teams.index');
     Route::livewire('users', Users::class)->name('users.index');
