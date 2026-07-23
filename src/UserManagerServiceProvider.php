@@ -5,6 +5,7 @@ namespace WebFresh\UserManager;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use WebFresh\UserManager\Console\Commands\WfumInstallCommand;
+use WebFresh\UserManager\Console\Commands\WfumInstallPermissions;
 
 class UserManagerServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,7 @@ class UserManagerServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 WfumInstallCommand::class,
+                WfumInstallPermissions::class,
             ]);
         }
 

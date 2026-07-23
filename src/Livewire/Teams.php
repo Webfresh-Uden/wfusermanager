@@ -61,6 +61,7 @@ class Teams extends Component
             'id' => $this->id,
         ], [
             'name' => $this->name,
+            'team_id' => (int)session('team_id') + 1
         ]);
 
         $this->clearFieldData();
