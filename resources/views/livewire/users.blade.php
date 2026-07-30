@@ -76,7 +76,7 @@
                                     @if( config('wfusermanager.allow_shadow_login') === true && (int)$user->shadow_opt_out === 0 )
                                         @if( $user->id !== auth()->id() )
                                             <flux:tooltip content="{{ __('Login as this user') }}">
-                                                <flux:icon.square-2-stack class="cursor-pointer inline-block me-4" wire:click="shadowlogin({{ $user->id }})" />
+                                                <flux:icon.square-2-stack class="cursor-pointer text-gray-500 inline-block me-4" wire:click="shadowlogin({{ $user->id }})" />
                                             </flux:tooltip>
                                         @else
                                             <flux:tooltip content="{{ __('You cannot shadow login as yourself') }}">
@@ -89,13 +89,13 @@
                                         </flux:tooltip>
                                     @endif
                                     <flux:tooltip content="{{ __('Assign roles to user') }}">
-                                        <flux:icon.identification class="cursor-pointer text-orange-500 inline-block me-4" wire:click="showAssignRoleModalWindow({{ $user->id }})" />
+                                        <flux:icon.identification class="cursor-pointer text-gray-500 inline-block me-4" wire:click="showAssignRoleModalWindow({{ $user->id }})" />
                                     </flux:tooltip>
                                     <flux:tooltip content="{{ __('Assign direct permissions to user') }}">
-                                        <flux:icon.puzzle-piece class="cursor-pointer text-orange-500 inline-block me-4" wire:click="showAssignPermissionsModalWindow({{ $user->id }})" />
+                                        <flux:icon.puzzle-piece class="cursor-pointer text-gray-500 inline-block me-4" wire:click="showAssignPermissionsModalWindow({{ $user->id }})" />
                                     </flux:tooltip>
                                     <flux:tooltip content="{{ __('Update user') }}">
-                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block me-4" wire:click="showWriteUserModalWindow({{ $user->id }})" />
+                                        <flux:icon.pencil-square class="cursor-pointer text-gray-500 inline-block me-4" wire:click="showWriteUserModalWindow({{ $user->id }})" />
                                     </flux:tooltip>
                                     @if( $user->id === auth()->id() )
                                         <flux:tooltip content="{{ __('You cannot delete your own user account') }}">

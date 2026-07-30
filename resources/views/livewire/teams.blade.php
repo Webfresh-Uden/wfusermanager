@@ -26,7 +26,7 @@
                                 </flux:table.cell>
                                 <flux:table.cell>
                                     <flux:tooltip content="{{ __('Update team') }}">
-                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block" wire:click="showWriteTeamModal({{ $team->id }})" />
+                                        <flux:icon.pencil-square class="cursor-pointer text-gray-500 inline-block" wire:click="showWriteTeamModal({{ $team->id }})" />
                                     </flux:tooltip>
                                     <flux:tooltip content="{{ __('Delete team') }}">
                                         <flux:icon.x-circle class="cursor-pointer text-red-500 inline-block" wire:click="showDeleteTeamModal({{ $team->id }})" />

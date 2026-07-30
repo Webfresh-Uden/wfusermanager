@@ -26,7 +26,7 @@
                                 </flux:table.cell>
                                 <flux:table.cell>
                                     <flux:tooltip content="{{ __('Update permission') }}">
-                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block" wire:click="showWritePermissionModal({{ $permission->id }})" />
+                                        <flux:icon.pencil-square class="cursor-pointer text-gray-500 inline-block" wire:click="showWritePermissionModal({{ $permission->id }})" />
                                     </flux:tooltip>
                                     <flux:tooltip content="{{ __('Delete permission') }}">
                                         <flux:icon.x-circle class="cursor-pointer text-red-500 inline-block" wire:click="showDeletePermissionModal({{ $permission->id }})" />

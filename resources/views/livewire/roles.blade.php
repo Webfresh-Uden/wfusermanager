@@ -46,7 +46,7 @@
                                 @endif
                                 <flux:table.cell>
                                     <flux:tooltip content="{{ __('Update role') }}">
-                                        <flux:icon.pencil-square class="cursor-pointer text-orange-500 inline-block" wire:click="showWriteRoleModal({{ $role->id }})" />
+                                        <flux:icon.pencil-square class="cursor-pointer text-gray-500 inline-block" wire:click="showWriteRoleModal({{ $role->id }})" />
                                     </flux:tooltip>
                                     <flux:tooltip content="{{ __('Delete role') }}">
                                         <flux:icon.x-circle class="cursor-pointer text-red-500 inline-block" wire:click="showDeleteRoleModal({{ $role->id }})" />
