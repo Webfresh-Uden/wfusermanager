@@ -17,7 +17,7 @@ use Spatie\Permission\Models\Permission;
 #[Title('Permissions Matrix')]
 class PermissionsMatrix extends Component
 {
-    public $teams, $roles, $permissions, $permissionGroups;
+    public $teams, $roles, $permissions, $permissionGroups, $pmgid;
 
     public function mount(): void
     {
@@ -38,10 +38,8 @@ class PermissionsMatrix extends Component
     public function addPermission( $permission_id, $role_id ): void
     {
         $permission = Permission::find($permission_id);
-        DB::table('role_has_permissions')->insertOrIgnore([
-            'permission_id' => $permission->id,
-            'role_id' => $role_id
-        ]);
+        $role = Role::find($role_id);
+        $role->givePermissionTo($permission);
 
         app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
@@ -51,11 +49,18 @@ class PermissionsMatrix extends Component
     public function removePermission( $permission_id, $role_id ): void
     {
         $permission = Permission::find($permission_id);
-
-        DB::table('role_has_permissions')->where('permission_id', $permission->id)->where('role_id', $role_id)->delete();
+        $role = Role::find($role_id);
+        $role->revokePermissionTo($permission);
 
         app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
         Flux::toast(text: __('Permission :permission removed', ['permission' => $permission->name]));
+    }
+
+    public function showPermissionGroup($pmgId=0){
+        $this->pmgid = 0;
+        if( $pmgId !== 0 ) {
+            $this->pmgid = $pmgId;
+        }
     }
 }

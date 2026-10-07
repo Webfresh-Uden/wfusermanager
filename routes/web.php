@@ -13,11 +13,11 @@ Route::group([
     'prefix' => 'admin',
     'middleware' => ['web', 'auth', 'verified'],
 ], function () {
-    Route::livewire('teams', Teams::class)->name('teams.index');
-    Route::livewire('users', Users::class)->name('users.index');
-    Route::livewire('roles', Roles::class)->name('roles.index');
-    Route::livewire('profile/platform', UserSettings::class)->name('wfum_usersettings.edit');
-    Route::livewire('permissions', Permissions::class)->name('permissions.index');
-    Route::livewire('permissions-matrix', PermissionsMatrix::class)->name('permissions.matrix');
-    Route::livewire('permission-groups', PermissionGroups::class)->name('permissions.groups');
+    Route::get('teams', Teams::class)->name('teams.index');
+    Route::get('users', Users::class)->name('users.index');
+    Route::get('roles', Roles::class)->name('roles.index');
+    Route::get('profile/platform', UserSettings::class)->name('wfum_usersettings.edit');
+    Route::get('permissions', Permissions::class)->name('permissions.index');
+    Route::get('permissions-matrix', PermissionsMatrix::class)->name('permissions.matrix');
+    Route::get('permission-groups', PermissionGroups::class)->name('permissions.groups');
 });

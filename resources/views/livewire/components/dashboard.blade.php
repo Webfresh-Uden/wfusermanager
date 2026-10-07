@@ -1,5 +1,5 @@
-<div class="grid auto-rows-min gap-4 md:grid-cols-3">
-    <div class="p-4 relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
+<div class="flex gap-4">
+    <div class="flex-1 p-4 relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
         <flux:heading size="lg" class="mb-2">{{ __('User statistics') }}</flux:heading>
         <flux:table>
             <flux:table.rows>
@@ -15,11 +15,14 @@
                     <flux:table.cell><strong>{{ __('Blocked users') }}</strong></flux:table.cell>
                     <flux:table.cell>{{ $userBlockedCount }}</flux:table.cell>
                 </flux:table.row>
+                <flux:table.row>
+                    <flux:table.cell><strong>{{ __('Current language') }}</strong></flux:table.cell>
+                    <flux:table.cell>{{ __(App::currentLocale()) }}</flux:table.cell>
+                </flux:table.row>
             </flux:table.rows>
         </flux:table>
-        {{ App::currentLocale() }}
     </div>
-    <div class="p-4 relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
+    <div class="flex-1 p-4 relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
         <flux:heading size="lg" class="mb-2">{{ __('Permission statistics') }}</flux:heading>
         <flux:table>
             <flux:table.rows>
@@ -38,7 +41,7 @@
             </flux:table.rows>
         </flux:table>
     </div>
-    <div class="p-4 relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
+    <div class="flex-1 p-4 relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
         <flux:heading size="lg" class="mb-2">{{ __('Dependencies') }}</flux:heading>
         <flux:table>
             <flux:table.rows>
@@ -54,7 +57,7 @@
         </flux:table>
         <flux:heading size="lg" class="mt-4 mb-2">{{ __('Credits') }}</flux:heading>
         <flux:text>
-            <strong>User manager</strong> by <strong>Roel van Lierop-Megens</strong><br/>
+            <strong>User manager</strong> {{ __('by') }} <strong>Roel van Lierop-Megens</strong><br/>
             {{ __('Commissioned by') }} <strong>Webfresh B.V.</strong><br/>
         </flux:text>
         <flux:table>

@@ -14,7 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
 use WebFresh\UserManager\Models\PermissionGroup;
 use WebFresh\UserManager\Models\Team;
 use WebFresh\UserManager\Models\WfumRole as Role;
-use WebFresh\UserManager\Models\WfumUser as User;
+use App\Models\User;
 use Flux\Flux;
 
 #[Title('Users')]

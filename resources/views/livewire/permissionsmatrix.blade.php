@@ -2,13 +2,26 @@
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         <div class="grid auto-rows-min gap-4 grid-cols-1">
             <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <div class="z-10 mt-4 mb-4">
-                    <flux:heading size="xl" level="1" class="ms-4">{{ __('Permissions matrix') }}</flux:heading>
+                <div class="absolute right-0 top-0 p-4 z-20">
+                    <flux:dropdown wire:model="pmgid">
+                        <flux:button icon:trailing="chevron-down">{{ __('Select a permission group') }}</flux:button>
+                        <flux:menu>
+                            <flux:menu.item wire:click="showPermissionGroup()">All</flux:menu.item>
+                            @foreach( $permissionGroups as $pmg )
+                                <flux:menu.item wire:click="showPermissionGroup('{{$pmg->id}}')">{{ $pmg->name }}</flux:menu.item>
+                            @endforeach
+                        </flux:menu>
+                    </flux:dropdown>
                 </div>
-                <div class="ms-4 me-4 overflow-x-hidden" style="overflow-y: scroll;display: block;max-height: calc(100% - 64px);">
-                    <flux:table container:class="max-h-80">
-                        <flux:table.columns sticky>
-                            <flux:table.column class="bg-zinc-800! hover:bg-zinc-700!" style="width: auto;"></flux:table.column>
+                <div class="z-10 mt-4 mb-4">
+                    <flux:heading size="xl" level="1" class="ms-4">
+                        {{ __('Permissions matrix') }}
+                    </flux:heading>
+                </div>
+                <div class="ms-4 me-4 mt-4 overflow-x-hidden" style="overflow-y: scroll;display: block;max-height: calc(100% - 64px);">
+                    <flux:table container:class="block-full mt-4">
+                        <flux:table.columns style="background-color:#FFFFFF;">
+                            <flux:table.column style="width: auto;"></flux:table.column>
                             @php $permissionColumns = []; @endphp
                             @if( (int)session('team_id') > 0 )
                                 @php $subteam = $teams->where('id', (int)session('team_id'))->first(); @endphp
@@ -31,10 +44,11 @@
                                     @endforeach
                                 @endforeach
                             @endif
-                            <flux:table.column align="center" class="text-center" style="width:40px;">&nbsp;</flux:table.column>
+                            <flux:table.column align="center" class="text-center" style="width:40px;background-color:transparent;">&nbsp;</flux:table.column>
                         </flux:table.columns>
                         <flux:table.rows>
                             @foreach( $permissionGroups as $pmg )
+                                @if( $pmgid == 0 || $pmgid == $pmg->id )
                                 <flux:table.row>
                                     <flux:table.cell style="background-color:#EEEEEE;border-top: 2px solid #888888;border-bottom: 2px solid #888888;"><strong>{{ $pmg->name }}</strong></flux:table.cell>
                                     @for($i=0; $i<count($permissionColumns); $i++)
@@ -79,6 +93,7 @@
                                         <flux:table.cell align="center" class="text-center" style="width:40px;">&nbsp;</flux:table.cell>
                                     </flux:table.row>
                                 @endforeach
+                                @endif
                             @endforeach
                         </flux:table.rows>
                     </flux:table>
