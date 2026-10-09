@@ -1,32 +1,32 @@
 {
-  "name": "webfresh/usermanager",
-  "description": "User Manager for Webfresh Laravel Projects",
-  "type": "library",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Roel van Lierop-Megens",
-      "email": "roel.van.lierop@gmail.com"
-    }
-  ],
-  "autoload": {
-    "psr-4": {
-      "WebFresh\\UserManager\\": "src",
-      "WebFresh\\UserManager\\Database\\Factories\\": "database/factories",
-      "WebFresh\\UserManager\\Database\\Seeders\\": "vendor/webfresh/resourcebalance/database/seeders"
-    }
-  },
-  "extra": {
-      "laravel": {
-          "providers": [
-              "WebFresh\\UserManager\\UserManagerServiceProvider"
-          ]
-      }
-  },
-  "require": {
-      "laravel/sanctum": "^4.3",
-      "spatie/laravel-permission": "^8.3"
-  },
+    "name": "webfresh/usermanager",
+    "description": "User Manager for Webfresh Laravel Projects",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roel van Lierop-Megens",
+            "email": "roel.van.lierop@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "WebFresh\\UserManager\\": "src/",
+            "WebFresh\\UserManager\\Database\\Factories\\": "database/factories",
+            "WebFresh\\UserManager\\Database\\Seeders\\": "database/seeders"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "WebFresh\\UserManager\\UserManagerServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "laravel/sanctum": "^4.3",
+        "spatie/laravel-permission": "^8.3"
+    },
     "require-dev": {
         "orchestra/testbench": "^11.1",
         "phpunit/phpunit": "^12.5",
@@ -38,9 +38,9 @@
             "WebFresh\\UserManager\\Tests\\": "tests/"
         }
     },
-  "config": {
-    "allow-plugins": {
-      "pestphp/pest-plugin": true
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
-  }
 }

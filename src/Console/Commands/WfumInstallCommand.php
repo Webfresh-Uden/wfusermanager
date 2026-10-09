@@ -2,13 +2,13 @@
 
 namespace WebFresh\UserManager\Console\Commands;
 
+use App;
 use App\Models\User;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Spatie\Permission\Models\Role;
 use WebFresh\UserManager\Models\Team;
-use App;
 
 #[Signature('wfum:install')]
 #[Description('Command description')]
@@ -21,10 +21,8 @@ class WfumInstallCommand extends Command
     {
         $this->info('Installing Webfresh User Manager...');
 
-        if( !App::isProduction() ) {
-            $confirmed = $this->confirm(
-                'Do you want to use the ENV data to create a user?',
-                false);
+        if (! App::isProduction()) {
+            $confirmed = $this->confirm('Do you want to use the ENV data to create a user?', false);
         }
 
         $first_name = env('WFUM_USER_FIRST_NAME', 'Webfresh');
@@ -32,7 +30,7 @@ class WfumInstallCommand extends Command
         $email = env('WFUM_USER_EMAIL', 'roel@webfresh.nl');
         $password = env('WFUM_USER_PASSWORD', 'WebFresh2026');
 
-        if( $confirmed === false ) {
+        if ($confirmed === false) {
             $first_name = $this->ask('What is the first name?');
             $last_name = $this->ask('What is the last name?');
             $email = $this->ask('What is the email address?');
@@ -40,14 +38,14 @@ class WfumInstallCommand extends Command
         }
 
         $user = User::create([
-            'name' => $first_name.' '.$last_name,
+            'name' => sprintf('%s %s', $first_name, $last_name),
             'email' => $email,
             'password' => bcrypt($password),
         ]);
 
         $team = Team::create([
             'name' => 'Administrators',
-            'team_id' => 0
+            'team_id' => 0,
         ]);
 
         $role = Role::create(['name' => 'Developer', 'team_id' => $team->id]);
@@ -56,9 +54,8 @@ class WfumInstallCommand extends Command
 
         $user->assignRole($role);
 
-        $this->info("User $first_name $last_name was created");
+        $this->info('User $first_name $last_name was created');
 
         $this->info('Installation completed, enjoy!');
-        //
     }
 }

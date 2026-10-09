@@ -22,7 +22,18 @@ The following tables will be created:
 
 Run the following command to migrate the database:
 
-- php artisan migrate
+```shell
+[php/sail] artisan migrate
+```
+
+### Seed the database
+
+To seed the permissions run:
+
+```shell
+[php/sail] artisan wfum:install
+[php/sail] artisan wfum:installpermissions
+```
 
 The user manager is installed, have fun!
 

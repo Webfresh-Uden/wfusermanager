@@ -2,20 +2,19 @@
 
 namespace WebFresh\UserManager\Livewire;
 
+use App\Models\User;
+use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\PermissionRegistrar;
 use WebFresh\UserManager\Models\PermissionGroup;
 use WebFresh\UserManager\Models\Team;
 use WebFresh\UserManager\Models\WfumRole as Role;
-use App\Models\User;
-use Flux\Flux;
 
 #[Title('Users')]
 class Users extends Component
@@ -23,34 +22,55 @@ class Users extends Component
     use WithPagination;
 
     private $users;
+
     public string $sortBy = 'name';
+
     #[Validate('string|in:desc,asc', message: 'Invalid sort field')]
     public string $sortDirection = 'asc';
+
     public bool $showUserWriteModal = false;
+
     public bool $showUserDeleteModal = false;
+
     public bool $showAssignRoleModal = false;
+
     public bool $showAssignPermissionsModal = false;
+
     #[Validate('string|max:255', message: 'User name invalid')]
     public string $name = '';
+
     #[Validate('string|email', message: 'Invalid email address')]
     public string $email = '';
+
     #[Validate('string|min:8', message: 'Password must be at least 8 characters')]
     public string $password = '';
+
     public array $userRoles = [];
+
     public array $userPermissions = [];
+
     public bool $blocked = false;
+
     public Collection $roles;
+
     public Collection $teams;
+
     public string $id = '';
+
     #[Validate('string|nullable', message: 'Invalid permission group ID')]
     public $permissionGroups;
 
     // Direct permission variables
     public $selectedTeamId;
+
     public $availableTeams = [];
+
     public $selectedRoleId;
+
     public $availableRoles = [];
+
     public $selectedPermissionGroupId = '';
+
     public $selectedPermissionGroup = null;
 
     public function rules()
@@ -58,7 +78,7 @@ class Users extends Component
         return [
             'name' => 'string|max:255',
             'email' => 'string|email',
-            'password' => 'string|min:8'
+            'password' => 'string|min:8',
         ];
     }
 
@@ -67,7 +87,8 @@ class Users extends Component
         $this->validateOnly($propertyName);
     }
 
-    public function mount(): void {
+    public function mount(): void
+    {
         $this->permissionGroups = PermissionGroup::all();
     }
 
@@ -76,11 +97,11 @@ class Users extends Component
     {
         $this->users = User::orderBy('name', $this->sortDirection)->paginate(15);
 
-        if ((int)session('team_id') > 0) {
+        if ((int) session('team_id') > 0) {
             $filteredCollection = $this->users->filter(function ($user) {
                 $teams = $user->userTeams();
                 foreach ($teams as $team) {
-                    if ($team['id'] === (int)session('team_id')) {
+                    if ($team['id'] === (int) session('team_id')) {
                         return $user;
                     }
                 }
@@ -91,8 +112,7 @@ class Users extends Component
         $this->roles = Role::all();
         $this->teams = Team::all();
 
-        if( $this->selectedPermissionGroupId !== null )
-        {
+        if ($this->selectedPermissionGroupId !== null) {
             $this->selectedPermissionGroup = PermissionGroup::find($this->selectedPermissionGroupId);
         }
 
@@ -109,7 +129,7 @@ class Users extends Component
         DB::transaction(function () use ($user, $roles) {
             DB::table('model_has_roles')->where('model_id', $user->id)->where('model_type', 'App\Models\User')->delete();
             foreach ($roles as $role) {
-                if( config('permission.teams') ) {
+                if (config('permission.teams')) {
                     $teamInsert = ['team_id' => $role->team_id];
                 }
                 DB::table('model_has_roles')->insert(
@@ -122,7 +142,7 @@ class Users extends Component
             }
         });
 
-        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        app()->make(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $this->showAssignRoleModal = false;
     }
@@ -211,13 +231,16 @@ class Users extends Component
         $user = User::find($user_id);
         $this->id = $user->id;
         $this->userRoles = $user->userRoles();
-        $this->availableRoles = array_map(function ($role) { return $role->id; }, $this->userRoles);
+        $this->availableRoles = array_map(function ($role) {
+            return $role->id;
+        }, $this->userRoles);
         $this->showAssignRoleModal = true;
     }
 
-    public function shadowlogin($user_id){
+    public function shadowlogin($user_id)
+    {
         $user = User::find($user_id);
-        if( $user->shadow_opt_out === false ) {
+        if ($user->shadow_opt_out === false) {
             $this->dispatch('shadowlogin', $user_id);
         }
     }
@@ -228,15 +251,14 @@ class Users extends Component
         $this->availableRoles = $user->userRoles();
         $this->userPermissions = $user->userPermissions($this->selectedTeamId);
         $roleList = [];
-        foreach($this->availableRoles as $role) {
-            if( intval($role->team_id) === intval($this->selectedTeamId) || $this->selectedTeamId === null ) {
+        foreach ($this->availableRoles as $role) {
+            if (intval($role->team_id) === intval($this->selectedTeamId) || $this->selectedTeamId === null) {
                 $roleList[] = $role;
             }
         }
         $this->availableRoles = $roleList;
 
-        if( count($this->availableRoles) === 1 )
-        {
+        if (count($this->availableRoles) === 1) {
             $this->selectedRoleId = $this->availableRoles[0]->id;
         }
     }
@@ -250,10 +272,9 @@ class Users extends Component
 
         $this->availableTeams = $user->userTeams();
 
-        if( config('permission.teams') )
-        {
-            if (count($this->availableTeams) > 1 && is_int(session('team_id')) && (int)session('team_id') !== 0) {
-                $this->selectedTeamId = (int)session('team_id');
+        if (config('permission.teams')) {
+            if (count($this->availableTeams) > 1 && is_int(session('team_id')) && (int) session('team_id') !== 0) {
+                $this->selectedTeamId = (int) session('team_id');
                 $this->updatedSelectedTeamId();
             }
             if (count($this->availableTeams) === 1) {
@@ -265,36 +286,36 @@ class Users extends Component
         $this->showAssignPermissionsModal = true;
     }
 
-    public function addDirectPermission( $permission_id ): void
+    public function addDirectPermission($permission_id): void
     {
         $user = User::find($this->id);
         $permission = Permission::find($permission_id);
-        if( config('permission.teams') ) {
+        if (config('permission.teams')) {
             $teamInsert = ['team_id' => $this->selectedTeamId];
         }
         DB::table('model_has_permissions')->insertOrIgnore(
             array_merge($teamInsert, [
                 'permission_id' => $permission->id,
                 'model_id' => $this->id,
-                'model_type' => 'App\Models\User'
+                'model_type' => 'App\Models\User',
             ])
         );
 
-        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        app()->make(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $this->userPermissions = $user->userPermissions();
 
         Flux::toast(text: __('Permission :permission added', ['permission' => $permission->name]));
     }
 
-    public function removeDirectPermission( $permission_id ): void
+    public function removeDirectPermission($permission_id): void
     {
         $user = User::find($this->id);
         $permission = Permission::find($permission_id);
 
         DB::table('model_has_permissions')->where('permission_id', $permission->id)->where('model_type', 'App\Models\User')->where('model_id', $this->id)->delete();
 
-        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        app()->make(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $this->userPermissions = $user->userPermissions();
 

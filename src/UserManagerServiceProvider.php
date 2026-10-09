@@ -24,17 +24,9 @@ class UserManagerServiceProvider extends ServiceProvider
             ]);
         }
 
-        $this->publishes([
-            __DIR__.'/../config/wfusermanager.php' => config_path('wfusermanager.php'),
-        ], 'config');
-
-        $this->publishes([
-            __DIR__.'/../database/migrations/' => database_path('migrations'),
-        ], 'migrations');
-
-        $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/wfum'),
-        ], 'wfum-views');
+        $this->publishes([__DIR__.'/../config/wfusermanager.php' => config_path('wfusermanager.php')], 'config');
+        $this->publishes([__DIR__.'/../database/migrations/' => database_path('migrations')], 'migrations');
+        $this->publishes([__DIR__.'/../resources/views' => resource_path('views/vendor/wfum')], 'wfum-views');
 
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
@@ -47,6 +39,6 @@ class UserManagerServiceProvider extends ServiceProvider
             classViewPath: __DIR__.'/../resources/views/livewire',
         );
 
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'wfum');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'wfum');
     }
 }
