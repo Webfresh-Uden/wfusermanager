@@ -5,6 +5,7 @@ namespace WebFresh\UserManager\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 use WebFresh\UserManager\Database\Factories\WfumUserFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 #[UseFactory(WfumUserFactory::class)]
 class WfumUser extends Authenticatable
 {
-    use HasRoles, HasFactory;
+    use HasRoles, HasFactory, LogsActivity;
 
     protected $guard_name = 'web';
 

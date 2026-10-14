@@ -3,10 +3,13 @@
 namespace WebFresh\UserManager\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Models\Role;
 
 class WfumRole extends Role
 {
+    use LogsActivity;
+
     public $fillable = [
         'name',
         'team_id',

@@ -4,10 +4,12 @@ namespace WebFresh\UserManager\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Models\Permission;
 
 class WfumPermission extends Permission
 {
+    use LogsActivity;
     protected $table = 'permissions';
 
     protected $fillable = [

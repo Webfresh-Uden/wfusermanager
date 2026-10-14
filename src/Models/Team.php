@@ -4,9 +4,12 @@ namespace WebFresh\UserManager\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Team extends Model
 {
+    use LogsActivity;
+
     protected $table = 'wfum_teams';
 
     protected $fillable = [

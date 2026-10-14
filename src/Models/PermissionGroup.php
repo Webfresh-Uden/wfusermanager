@@ -4,6 +4,7 @@ namespace WebFresh\UserManager\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use WebFresh\UserManager\Database\Factories\PermissionGroupFactory;
@@ -11,7 +12,7 @@ use WebFresh\UserManager\Database\Factories\PermissionGroupFactory;
 class PermissionGroup extends Model
 {
     /** @use HasFactory<PermissionGroupFactory> */
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $table = 'permission_groups';
 
