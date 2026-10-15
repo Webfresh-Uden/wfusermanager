@@ -5,6 +5,7 @@ namespace WebFresh\UserManager\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 use WebFresh\UserManager\Database\Factories\WfumUserFactory;
@@ -84,5 +85,10 @@ class WfumUser extends Authenticatable
         }
 
         return substr($initials, 0, 2);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logAll();
     }
 }
