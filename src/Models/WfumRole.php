@@ -28,6 +28,13 @@ class WfumRole extends Role
 
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults()->logAll();
+        return LogOptions::defaults()
+            ->logOnlyDirty()
+            ->useLogName('WebFresh User Manager: Role')
+            ->logAll()
+            ->logExcept([
+                'created_at',
+                'updated_at'
+            ]);
     }
 }

@@ -25,6 +25,13 @@ class Team extends Model
 
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults()->logAll();
+        return LogOptions::defaults()
+            ->logOnlyDirty()
+            ->useLogName('WebFresh User Manager: Team')
+            ->logAll()
+            ->logExcept([
+                'created_at',
+                'updated_at'
+            ]);
     }
 }

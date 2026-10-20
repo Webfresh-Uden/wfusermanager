@@ -125,6 +125,11 @@
     "Select a permission group": "Select a permission group",
     "Current language": "Current language",
     "nl": "Dutch",
-    "en": "English"
+    "en": "English",
+    "WebFresh User Manager: User": "WebFresh User Manager: User",
+    "WebFresh User Manager: Role": "WebFresh User Manager: Role",
+    "WebFresh User Manager: Permission": "WebFresh User Manager: Permission",
+    "WebFresh User Manager: Team": "WebFresh User Manager: Team",
+    "WebFresh User Manager: Permission Group": "WebFresh User Manager: Permission Group"
 }
 

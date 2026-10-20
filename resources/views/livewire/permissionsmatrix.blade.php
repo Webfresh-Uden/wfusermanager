@@ -6,9 +6,9 @@
                     <flux:dropdown wire:model="pmgid">
                         <flux:button icon:trailing="chevron-down">{{ __('Select a permission group') }}</flux:button>
                         <flux:menu>
-                            <flux:menu.item wire:click="showPermissionGroup()">All</flux:menu.item>
+                            <flux:menu.item wire:click="showPermissionGroup()">{{ __('All') }}</flux:menu.item>
                             @foreach( $permissionGroups as $pmg )
-                                <flux:menu.item wire:click="showPermissionGroup('{{$pmg->id}}')">{{ $pmg->name }}</flux:menu.item>
+                                <flux:menu.item wire:click="showPermissionGroup('{{$pmg->id}}')">{{ __($pmg->name) }}</flux:menu.item>
                             @endforeach
                         </flux:menu>
                     </flux:dropdown>
@@ -50,7 +50,7 @@
                             @foreach( $permissionGroups as $pmg )
                                 @if( $pmgid == 0 || $pmgid == $pmg->id )
                                 <flux:table.row>
-                                    <flux:table.cell style="background-color:#EEEEEE;border-top: 2px solid #888888;border-bottom: 2px solid #888888;"><strong>{{ $pmg->name }}</strong></flux:table.cell>
+                                    <flux:table.cell style="background-color:#EEEEEE;border-top: 2px solid #888888;border-bottom: 2px solid #888888;"><strong>{{ __($pmg->name) }}</strong></flux:table.cell>
                                     @for($i=0; $i<count($permissionColumns); $i++)
                                         @if( $permissionColumns[$i] === 'T' )
                                             <flux:table.cell align="center" class="text-center" style="border-top: 2px solid #888888;border-bottom: 2px solid #888888;width:40px;border-left: 2px solid #888888;border-right: 2px solid #888888;background-color:#EEEEEE;">&nbsp;</flux:table.cell>
@@ -61,7 +61,7 @@
                                 </flux:table.row>
                                 @foreach( $pmg->permissions as $pml )
                                     <flux:table.row wire:key="pml-{{ $pml->id }}">
-                                        <flux:table.cell>{{ $pml->name }}</flux:table.cell>
+                                        <flux:table.cell>{{ __($pml->name) }}</flux:table.cell>
                                         @if( (int)session('team_id') > 0 )
                                             @foreach( $roles as $role )
                                                 @if($role->team_id === (int)session('team_id') )
