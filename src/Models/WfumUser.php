@@ -5,6 +5,8 @@ namespace WebFresh\UserManager\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 use WebFresh\UserManager\Database\Factories\WfumUserFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -12,7 +14,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 #[UseFactory(WfumUserFactory::class)]
 class WfumUser extends Authenticatable
 {
-    use HasRoles, HasFactory;
+    use HasRoles, HasFactory, LogsActivity;
 
     protected $guard_name = 'web';
 
@@ -83,5 +85,17 @@ class WfumUser extends Authenticatable
         }
 
         return substr($initials, 0, 2);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnlyDirty()
+            ->useLogName('WebFresh User Manager: User')
+            ->logAll()
+            ->logExcept([
+                'created_at',
+                'updated_at'
+            ]);
     }
 }

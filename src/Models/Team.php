@@ -4,9 +4,13 @@ namespace WebFresh\UserManager\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Team extends Model
 {
+    use LogsActivity;
+
     protected $table = 'wfum_teams';
 
     protected $fillable = [
@@ -17,5 +21,17 @@ class Team extends Model
     public function roles(): HasMany
     {
         return $this->hasMany(WfumRole::class)->orderBy('name');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnlyDirty()
+            ->useLogName('WebFresh User Manager: Team')
+            ->logAll()
+            ->logExcept([
+                'created_at',
+                'updated_at'
+            ]);
     }
 }

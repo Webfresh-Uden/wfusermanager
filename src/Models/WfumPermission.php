@@ -4,10 +4,13 @@ namespace WebFresh\UserManager\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Models\Permission;
 
 class WfumPermission extends Permission
 {
+    use LogsActivity;
     protected $table = 'permissions';
 
     protected $fillable = [
@@ -19,5 +22,17 @@ class WfumPermission extends Permission
     public function permissionGroup(): BelongsTo
     {
         return $this->belongsTo(PermissionGroup::class, 'permission_group_id');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnlyDirty()
+            ->useLogName('WebFresh User Manager: Permission')
+            ->logAll()
+            ->logExcept([
+                'created_at',
+                'updated_at'
+            ]);
     }
 }
