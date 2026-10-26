@@ -19,6 +19,7 @@ class UserSettings extends Component
     public function rules()
     {
         return [
+            'shadow_opt_out' => 'boolean:strict'
         ];
     }
 
